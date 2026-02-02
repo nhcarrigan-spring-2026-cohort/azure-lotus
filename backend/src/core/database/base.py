@@ -1,5 +1,5 @@
-from features.family.model import FamilyProfile
-from features.invitations.model import Invitation
-from features.seniors.model import SeniorProfile, SeniorVolunteer
-from features.users.model import User
-from features.volunteers.model import VolunteerProfile
+from src.features.users.models import User
+from src.features.seniors.models import SeniorProfile, SeniorVolunteer
+from src.features.invitations.models import Invitation
+
+# Note: We removed VolunteerProfile because it is now handled by UserRole
