@@ -1,4 +1,16 @@
 services:
+  app:
+    build:
+      context: ./backend
+      dockerfile: src/Dockerfile
+    ports:
+      - 8000:8000
+    environment:
+      DATABASE_URL: "postgresql://admin:password@database:5432/senior_checkin"
+    depends_on:
+      - database
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
   database:
     image: "postgres:15"
     ports:
