@@ -1,0 +1,13 @@
+services:
+  database:
+    image: "postgres:15"
+    ports:
+      - 5432:5432
+
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password 
+      POSTGRES_DB: senior_checkin 
+    
+    volumes:
+      - ./db-data/:/var/lib/postgresql/data/
