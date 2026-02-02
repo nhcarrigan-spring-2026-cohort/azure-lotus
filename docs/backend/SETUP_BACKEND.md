@@ -35,7 +35,7 @@ cp .sample.env .env
 #### 5. Run Docker
 
 ```
-docker compose up -d database
+docker compose up -d
 ```
 
 #### 6. Run migration
