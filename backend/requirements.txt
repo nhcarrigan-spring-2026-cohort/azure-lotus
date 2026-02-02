@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+sqlmodel==0.0.32
+psycopg2-binary
+python-dotenv
