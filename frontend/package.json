@@ -11,8 +11,10 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@tanstack/react-query": "^5.90.20",
 		"react": "^19.2.0",
-		"react-dom": "^19.2.0"
+		"react-dom": "^19.2.0",
+		"react-router": "^7.13.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.13",
