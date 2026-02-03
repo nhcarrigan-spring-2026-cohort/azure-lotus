@@ -3,11 +3,12 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-# Project root
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[3]  # azure-lotus
+BACKEND_DIR = PROJECT_ROOT / "backend"
 
-# Load .env
-load_dotenv(BASE_DIR / ".env")
+ENV_FILE = PROJECT_ROOT / ".env"
+if ENV_FILE.exists():
+    load_dotenv(ENV_FILE)
 
 class Settings:
     # App
