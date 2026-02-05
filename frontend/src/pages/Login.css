@@ -56,6 +56,7 @@
     padding: 0 18px 0 12px;
     font-size: 20px;
     outline: none;
+    margin-bottom: 20px;
 }
 
 .login-input::placeholder {
@@ -65,15 +66,6 @@
 
 .login-input:focus {
     border-color: purple;
-}
-
-.login-magic {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin: 18px 0 30px;
-    font-size: 18px;
-    color: grey;
 }
 
 .login-button {

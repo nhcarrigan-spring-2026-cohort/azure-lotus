@@ -1,37 +1,45 @@
 import { Link } from 'react-router';
-import { useState } from 'react';
 import './Login.css';
 
 export default function Login() {
-  const [phone, setPhone] = useState('');
   return (
     <>
       <div className="login-page">
         <div className="login-container">
           <h1 className="login-title">Welcome Back</h1>
-          <p className="login-subtitle">Enter your phone number to log in.</p>
+          <p className="login-subtitle">
+            Enter your username and password to log in.
+          </p>
 
-          <form className="login-form">
-            <label className="login-label" htmlFor="phone">
-              Phone Number
+          <form className="login-form" autoComplete="off">
+            <label className="login-label" htmlFor="username">
+              Username
             </label>
             <div className="input-wrap">
               <input
-                id="phone"
+                id="username"
                 className="login-input"
-                type="tel"
-                placeholder="📱 12 345 678"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                type="text"
+                placeholder="Enter your username"
+                required
               />
             </div>
 
-            <p className="login-magic">
-              ℹ️ We will text you a magic link to log in.
-            </p>
+            <label className="login-label" htmlFor="password">
+              Password
+            </label>
+            <div className="input-wrap">
+              <input
+                id="password"
+                className="login-input"
+                type="password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
 
             <button className="login-button" type="button">
-              SEND LINK ➡️
+              LOG IN ➡️
             </button>
           </form>
 
