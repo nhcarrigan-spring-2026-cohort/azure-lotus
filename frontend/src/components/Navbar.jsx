@@ -9,7 +9,7 @@ export default function Navbar() {
     setOpen(false);
   }
   return (
-    <>
+    
       <header className="navbar">
         <div className="navbar-left">
           <div className="logo">
@@ -48,6 +48,6 @@ export default function Navbar() {
           </Link>
         </nav>
       </header>
-    </>
+    
   );
 }

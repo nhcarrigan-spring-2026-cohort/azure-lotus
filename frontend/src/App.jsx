@@ -1,5 +1,7 @@
 import { Routes, Route } from 'react-router';
 import Navbar from './components/Navbar.jsx';
+import Footer from "./components/Footer.jsx";
+
 import Home from './pages/Home.jsx';
 import About from './pages/about.jsx';
 import Explained from './pages/explained.jsx';
@@ -18,6 +20,8 @@ export default function App() {
         <Route path="/Login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>
+
+      <Footer />
     </>
   );
 }
