@@ -1,20 +1,18 @@
-import {useAuthContext} from "../context/AuthContext.jsx"
+import { useAuthContext } from '../context/AuthContext.jsx';
 
 const Login = () => {
+  const { login } = useAuthContext();
 
-    const {login} = useAuthContext()
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    await login.mutateAsync({ username: 'emilys', password: 'emilyspass' });
+  };
 
-    const handleLogin = async (e) => {
-        e.preventDefault()
-        await login.mutateAsync({username: "emilys", password: "emilyspass"})
-    }
+  return (
+    <button onClick={handleLogin} disabled={login.isPending}>
+      Login
+    </button>
+  );
+};
 
-    return (
-        <button
-            onClick={handleLogin}
-            disabled={login.isPending}
-        >Login</button>
-    )
-}
-
-export default Login
+export default Login;
