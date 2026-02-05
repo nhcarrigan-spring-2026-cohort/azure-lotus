@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from typing import List
 
-
 from sqlalchemy import Column, JSON
 from sqlmodel import Field, SQLModel
 
