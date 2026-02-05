@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 PROJECT_ROOT = Path(__file__).resolve().parents[3]  # azure-lotus
 BACKEND_DIR = PROJECT_ROOT / "backend"
 
-ENV_FILE = PROJECT_ROOT / ".env"
+ENV_FILE = BACKEND_DIR / ".env"
 if ENV_FILE.exists():
     load_dotenv(ENV_FILE)
 
