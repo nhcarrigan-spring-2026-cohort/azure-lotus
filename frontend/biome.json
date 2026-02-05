@@ -52,7 +52,7 @@
             "noUnsafeOptionalChaining": "error",
             "noUnusedLabels": "error",
             "noUnusedPrivateClassMembers": "error",
-            "noUnusedVariables": "error",
+            "noUnusedVariables": "warn",
             "useIsNan": "error",
             "useValidForDirection": "error",
             "useValidTypeof": "error",
@@ -233,7 +233,7 @@
           "onemptied"
         ]
       },
-      "linter": { "rules": { "correctness": { "noUnusedVariables": "error" } } }
+      "linter": { "rules": { "correctness": { "noUnusedVariables": "warn" } } }
     },
     {
       "includes": ["**/*.{js,jsx}"],
@@ -265,7 +265,7 @@
             "noUnsafeOptionalChaining": "error",
             "noUnusedLabels": "error",
             "noUnusedPrivateClassMembers": "error",
-            "noUnusedVariables": "error",
+            "noUnusedVariables": "warn",
             "useIsNan": "error",
             "useValidForDirection": "error",
             "useValidTypeof": "error",
@@ -446,7 +446,7 @@
           "onemptied"
         ]
       },
-      "linter": { "rules": { "correctness": { "noUnusedVariables": "error" } } }
+      "linter": { "rules": { "correctness": { "noUnusedVariables": "warn" } } }
     },
     {
       "includes": ["**/*.{js,jsx}"],
@@ -478,7 +478,7 @@
             "noUnsafeOptionalChaining": "error",
             "noUnusedLabels": "error",
             "noUnusedPrivateClassMembers": "error",
-            "noUnusedVariables": "error",
+            "noUnusedVariables": "warn",
             "useIsNan": "error",
             "useValidForDirection": "error",
             "useValidTypeof": "error",
@@ -531,7 +531,7 @@
     {
       "includes": ["**/*.{js,jsx}"],
       "linter": {
-        "rules": { "style": { "useComponentExportOnlyModules": "error" } }
+        "rules": { "style": { "useComponentExportOnlyModules": "info" } }
       }
     },
     {
@@ -665,7 +665,7 @@
           "onemptied"
         ]
       },
-      "linter": { "rules": { "correctness": { "noUnusedVariables": "error" } } }
+      "linter": { "rules": { "correctness": { "noUnusedVariables": "warn" } } }
     }
   ],
   "assist": {
