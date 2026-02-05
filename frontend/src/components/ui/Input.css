@@ -1,0 +1,47 @@
+.input-container {
+  margin: 0.5%;
+  position: relative;
+}
+
+.input-field {
+  padding: 20px;
+  font-size: 1.25rem;
+  color: darkgreen;
+  line-height: 1.5;
+  border: 2px solid lightgray ;
+  border-radius: 16px;
+  background-color: whitesmoke;
+  transition: all 0.5s ease;
+  box-shadow: 0px 2px 1px 0px rgba(0,0,0,0.5);
+}
+
+.input-field::placeholder {
+  color: olivedrab;
+  font-size: 1.125rem;
+  opacity: 0.8;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: lightgreen;
+  box-shadow: 0 0 0 3px darkgreen;
+  transform: scale(1.02);
+}
+
+.input-field.errored {
+  border-color: red;
+  animation: pulse 0.5s;
+}
+
+.error-text {
+  color: red;
+  font-size: 0.95rem;
+  margin-top: 8px;
+  padding-left: 55px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
