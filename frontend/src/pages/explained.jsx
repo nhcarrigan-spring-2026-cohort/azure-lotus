@@ -1,3 +1,4 @@
+<<<<<<< feat/favicon.ico-and-browser-title
 import useTitle from "../components/customHooks/useTitle"
 
 export default function explained() {
@@ -9,3 +10,12 @@ export default function explained() {
         </>
     )
 }
+=======
+export default function Explained() {
+  return (
+    <>
+      <h1>How it works</h1>
+    </>
+  );
+}
+>>>>>>> main
