@@ -1,4 +1,4 @@
-import useTitle from "../components/customHooks/useTitle"
+import useTitle from "../components/hooks/useTitle"
 
 export default function about() {
     useTitle("About");
