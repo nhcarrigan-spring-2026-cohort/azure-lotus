@@ -16,7 +16,7 @@ class Settings:
     ENV: str = os.getenv("ENV", "development")
 
     # Security
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "unsafe-secret")
+    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "unsafe-secret")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(
         os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30)
     )

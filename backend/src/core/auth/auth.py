@@ -1,13 +1,12 @@
+from core.auth import security
 from fastapi import APIRouter, Depends, HTTPException, status
-from features.users import utils
-from src.features.users.utils import hash_password,verify_password
+from src.core.auth.security import hash_password,verify_password
 auth_router = APIRouter()
-from src.features.users.schemas.user_create import user_create, response, login_equest
+from src.features.users.models import User, user_create, response, login_equest
 from src.core.database.session import get_session
 from sqlmodel import Session 
 from typing import Any
-from src.features.users.models import User
-from src.features.users.utils import *
+from src.core.setting import *
 
 @auth_router.post("/register",response_model=response)
 def Register(user: user_create, db: Session = Depends(get_session)) -> Any:
@@ -42,7 +41,7 @@ def Login(user: login_equest, db: Session = Depends(get_session)) -> Any:
             detail="Invalid credentials"
             )
         payload = {"user_id": str(existing_user.id), "email":str(existing_user.email)}
-        token = utils.create_token_pair(payload)
+        token = security.create_token_pair(payload)
 
         return {
         "user_info": {
