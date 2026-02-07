@@ -22,7 +22,9 @@ dependencies = [
   "python-dotenv>=1.0.1",
   "apscheduler>=3.10.4",
   "loguru>=0.7.2",
-  "fastapi-mail>=1.4.1"
+  "fastapi-mail>=1.4.1",
+  "bcrypt>=5.0.0",
+  "pyjwt>=2.11.0",
 ]
 
 [project.optional-dependencies]
