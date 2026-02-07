@@ -1,7 +1,10 @@
+import useTitle from "../components/hooks/useTitle";
+
 export default function signup() {
-  return (
-    <>
-      <h1>Sign up</h1>
-    </>
-  );
+  useTitle("Sign Up");
+    return (
+        <>
+            <h1>Signup</h1>
+        </>
+    )
 }
