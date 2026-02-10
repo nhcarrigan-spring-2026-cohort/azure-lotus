@@ -1,11 +1,10 @@
-import React from "react";
-import "./button.css";
+import './button.css';
 
 export default function Button({
   children,
-  variant = "primary",
-  size = "medium",
-  className = "",
+  variant = 'primary',
+  size = 'medium',
+  className = '',
   ...props
 }) {
   const buttonClass = `btn btn-${variant} btn-${size} ${className}`;
