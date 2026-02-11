@@ -9,6 +9,7 @@ p {
   font-size: 1.25rem;
   background-color: white;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  border-radius: 5%;
 }
 
 .title {
