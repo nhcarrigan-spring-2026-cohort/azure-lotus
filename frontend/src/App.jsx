@@ -1,10 +1,11 @@
-import { Routes, Route } from 'react-router';
+import {Route, Routes} from 'react-router';
 import Navbar from './components/Navbar.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/about.jsx';
 import Explained from './pages/explained.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/signup.jsx';
+import NotFound from './pages/NotFound.jsx';
 
 export default function App() {
   return (
