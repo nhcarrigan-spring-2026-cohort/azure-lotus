@@ -1,5 +1,5 @@
-import useTitle from "../components/hooks/useTitle";
-import "./Home.css";
+import useTitle from '../components/hooks/useTitle';
+import './Home.css';
 
 export default function Home() {
   useTitle();
