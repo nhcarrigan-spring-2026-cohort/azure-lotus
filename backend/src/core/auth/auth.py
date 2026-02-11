@@ -1,6 +1,6 @@
 from core.auth import security
 from fastapi import APIRouter, Depends, HTTPException, status
-from src.core.auth.security import hash_password,verify_password
+from src.core.auth.security import hash_password,verify_password, create_token_pair
 auth_router = APIRouter()
 from src.features.users.models import User, user_create, response, login_equest
 from src.core.database.session import get_session
@@ -41,7 +41,7 @@ def Login(user: login_equest, db: Session = Depends(get_session)) -> Any:
             detail="Invalid credentials"
             )
         payload = {"user_id": str(existing_user.id), "email":str(existing_user.email)}
-        token = security.create_token_pair(payload)
+        token = create_token_pair(payload)
 
         return {
         "user_info": {
