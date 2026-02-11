@@ -53,7 +53,7 @@ class user_create(SQLModel):
         return v
 
 # here we can add like first_name and last_name or phone_number if it should be included
-class login_equest(SQLModel):
+class login_request(SQLModel):
     email: EmailStr = Field(..., description="Unique email")
     password: str
 
