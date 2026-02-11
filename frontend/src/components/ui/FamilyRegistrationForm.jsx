@@ -1,17 +1,17 @@
-import "./FamilyRegistrationForm.css";
-import Input from "./Input";
-import Button from "./Button";
-import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import { useState } from "react";
+import './FamilyRegistrationForm.css';
+import Input from './Input';
+import Button from './Button';
+import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
+import { useState } from 'react';
 
 export default function FamilyRegistrationForm() {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
     termsCheckbox: false,
   });
 
@@ -30,48 +30,48 @@ export default function FamilyRegistrationForm() {
 
     // Email validation
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required.";
+      newErrors.email = 'Email is required.';
     } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Invalid email format.";
+      newErrors.email = 'Invalid email format.';
     }
 
     // password and confirmPassword validation
     if (!formData.password.trim()) {
-      newErrors.password = "Password is required.";
+      newErrors.password = 'Password is required.';
     } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters.";
+      newErrors.password = 'Password must be at least 8 characters.';
     }
 
     if (!formData.confirmPassword.trim()) {
-      newErrors.confirmPassword = "Confirm password is required.";
+      newErrors.confirmPassword = 'Confirm password is required.';
     } else if (formData.confirmPassword !== formData.password) {
-      newErrors.confirmPassword = "Passwords do not match.";
+      newErrors.confirmPassword = 'Passwords do not match.';
     }
 
     // firstName and lastName validation
     if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required.";
+      newErrors.firstName = 'First name is required.';
     } else if (!nameRegex.test(formData.firstName)) {
-      newErrors.firstName = "Invalid first name format.";
+      newErrors.firstName = 'Invalid first name format.';
     }
 
     if (!formData.lastName.trim()) {
-      newErrors.lastName = "Last name is required.";
+      newErrors.lastName = 'Last name is required.';
     } else if (!nameRegex.test(formData.lastName)) {
-      newErrors.lastName = "Invalid last name format.";
+      newErrors.lastName = 'Invalid last name format.';
     }
 
     // phone validation
-    const normalizePhone = formData.phone.replace(/[^\d+]/g, "");
+    const normalizePhone = formData.phone.replace(/[^\d+]/g, '');
     if (!normalizePhone) {
-      newErrors.phone = "Phone number is required.";
+      newErrors.phone = 'Phone number is required.';
     } else if (!phoneRegex.test(normalizePhone)) {
-      newErrors.phone = "Invalid phone number format.";
+      newErrors.phone = 'Invalid phone number format.';
     }
 
     // checkbox validation
     if (!formData.termsCheckbox) {
-      newErrors.termsCheckbox = "You must accept the terms and conditions.";
+      newErrors.termsCheckbox = 'You must accept the terms and conditions.';
     }
 
     setErrors(newErrors);
@@ -85,7 +85,7 @@ export default function FamilyRegistrationForm() {
 
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === 'checkbox' ? checked : value,
     });
   };
 
@@ -96,7 +96,7 @@ export default function FamilyRegistrationForm() {
     if (!isValid) return;
     // temporary console.log, need to be removed after adding API
     if (isValid) {
-      console.log("Form Submitted Successfully:", formData);
+      console.log('Form Submitted Successfully:', formData);
       //API here
     }
   };
@@ -127,7 +127,7 @@ export default function FamilyRegistrationForm() {
           </label>
           <Input
             id="password-field"
-            type={isPasswordVisible ? "text" : "password"}
+            type={isPasswordVisible ? 'text' : 'password'}
             name="password"
             className="form-input"
             placeholder="Enter password"
@@ -148,7 +148,7 @@ export default function FamilyRegistrationForm() {
           </label>
           <Input
             id="confirm-password-field"
-            type={isConfirmPasswordVisible ? "text" : "password"}
+            type={isConfirmPasswordVisible ? 'text' : 'password'}
             name="confirmPassword"
             className="form-input"
             placeholder="Re-enter password"
@@ -227,7 +227,7 @@ export default function FamilyRegistrationForm() {
             error={errors.termsCheckbox}
           />
           <label htmlFor="terms-check" className="terms-label">
-            I agree to the{" "}
+            I agree to the{' '}
             <a className="terms-and-conditions-link" href="#" target="_blank">
               Terms and Conditions
             </a>
