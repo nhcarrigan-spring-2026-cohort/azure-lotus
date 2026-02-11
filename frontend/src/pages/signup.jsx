@@ -1,10 +1,11 @@
-import useTitle from '../components/hooks/useTitle';
+import useTitle from "../components/hooks/useTitle";
+import FamilyRegistrationForm from "../components/ui/FamilyRegistrationForm";
 
 export default function signup() {
-  useTitle('Sign Up');
+  useTitle("Sign Up");
   return (
     <>
-      <h1>Signup</h1>
+      <FamilyRegistrationForm />
     </>
   );
 }
