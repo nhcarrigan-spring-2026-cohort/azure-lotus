@@ -8,6 +8,7 @@ export default function Input({
   value,
   onChange,
   error = '',
+  className = '',
   ...rest
 }) {
   return (
@@ -19,7 +20,7 @@ export default function Input({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className={error ? 'input-field errored' : 'input-field'}
+        className={`input-field ${error ? 'errored' : ''} ${className}`}
         {...rest}
       />
       {error && <span className="error-text">{error}</span>}
