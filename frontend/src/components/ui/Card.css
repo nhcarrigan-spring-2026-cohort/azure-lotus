@@ -1,0 +1,42 @@
+
+/* Base styles are mobile friendly */
+.card-container {
+    /* background-color: rgb(165, 161, 161); */
+    width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    height: auto;
+    padding: 8px;
+}
+
+.card{
+    width: 400px;
+    height: 350px;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+/* MEDIA QUERIES FOR RESPONSIVENESS */
+
+/* Tablet Layout */
+@media (min-width: 768px) {
+    .card-container {
+        width: 700px;
+    }
+    .card {
+        width: 600px;
+        height: 300px;
+    }
+}
+
+/* desktop layout */
+@media (min-width: 1024px) {
+    .card {
+        max-width: 900px;
+
+    }
+}

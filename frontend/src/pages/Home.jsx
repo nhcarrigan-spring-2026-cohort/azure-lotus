@@ -1,4 +1,5 @@
 import useTitle from '../components/hooks/useTitle';
+import Card from '../components/ui/Card';
 import './Home.css';
 
 export default function Home() {
@@ -6,6 +7,7 @@ export default function Home() {
   return (
     <>
       <h1>Home</h1>
+      
     </>
   );
 }
