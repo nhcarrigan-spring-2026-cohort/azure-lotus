@@ -57,7 +57,7 @@ def login(user: login_request, response: Response, db: Session = Depends(get_ses
         token = security.create_token_pair(payload)
 
         # Set token as cookie
-        response.set_cookie(key="token", value=token, httponly=True, secure=False)
+        response.set_cookie(key="refresh_token", value=token.get("refresh_token"), httponly=True, secure=False)
 
         # Return user info 
         return {
@@ -65,7 +65,8 @@ def login(user: login_request, response: Response, db: Session = Depends(get_ses
             "id": existing_user.id,
             "email": existing_user.email,
             "phone_number": existing_user.phone_number,
-            "first_name": existing_user.first_name
+            "first_name": existing_user.first_name,
+            "access_token": token.get("access_token")
         }
     }   
 
