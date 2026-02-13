@@ -1,7 +1,11 @@
+import useTitle from '../components/hooks/useTitle';
+
 export default function explained() {
-    return (
-        <>
-            <h1>How it works</h1>
-        </>
-    )
+  useTitle('How-to');
+
+  return (
+    <>
+      <h1>How it works</h1>
+    </>
+  );
 }

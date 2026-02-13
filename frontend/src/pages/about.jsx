@@ -1,7 +1,10 @@
+import useTitle from '../components/hooks/useTitle';
+
 export default function about() {
-    return (
-        <>
-            <h1>About</h1>
-        </>
-    )
+  useTitle('About');
+  return (
+    <>
+      <h1>About</h1>
+    </>
+  );
 }

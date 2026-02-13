@@ -7,9 +7,21 @@ services:
       - 8000:8000
     environment:
       DATABASE_URL: "postgresql://admin:password@database:5432/senior_checkin"
+      PYTHONPATH: /app/src
     depends_on:
       - database
     command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:80
+    depends_on:
+      - app
 
   database:
     image: "postgres:15"
