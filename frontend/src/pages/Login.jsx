@@ -46,7 +46,12 @@ export default function Login() {
               />
             </div>
 
-            <button className="login-button" type="button" onClick={handleLogin} disabled={login.isPending}>
+            <button
+              className="login-button"
+              type="button"
+              onClick={handleLogin}
+              disabled={login.isPending}
+            >
               LOG IN ➡️
             </button>
           </form>

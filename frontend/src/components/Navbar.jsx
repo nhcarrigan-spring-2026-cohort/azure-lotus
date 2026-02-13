@@ -8,7 +8,6 @@ export default function Navbar() {
 
   const { isAuthenticated, logout } = useAuthContext();
 
-
   function closeMenu() {
     setOpen(false);
   }
@@ -45,18 +44,19 @@ export default function Navbar() {
             How it works
           </Link>
           {isAuthenticated ? (
-              <div className="link-button" onClick={logout}>Logout</div>
-          ):(
-              <>
-                <Link to="/Login" onClick={closeMenu}>
-                  Login
-                </Link>
-                <Link to="/signup" onClick={closeMenu}>
-                  Sign up
-                </Link>
-              </>
+            <div className="link-button" onClick={logout}>
+              Logout
+            </div>
+          ) : (
+            <>
+              <Link to="/Login" onClick={closeMenu}>
+                Login
+              </Link>
+              <Link to="/signup" onClick={closeMenu}>
+                Sign up
+              </Link>
+            </>
           )}
-
         </nav>
       </header>
     </>
