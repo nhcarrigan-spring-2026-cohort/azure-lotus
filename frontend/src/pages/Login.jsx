@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import './Login.css';
+import { useAuthContext } from '../context/AuthContext.jsx';
 
 export default function Login() {
   const { login } = useAuthContext();

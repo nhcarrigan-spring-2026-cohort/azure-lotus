@@ -26,8 +26,14 @@ export function AuthProvider({ children }) {
     },
   });
 
+  const logout = () => {
+    // TODO: use backend logout endpoint
+    setIsAuthenticated(false);
+  }
+
   const authValue = {
     login,
+    logout,
     isAuthenticated,
     accessToken,
   };
