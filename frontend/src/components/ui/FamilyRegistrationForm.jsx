@@ -3,8 +3,11 @@ import Input from './Input';
 import Button from './Button';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useState } from 'react';
+import {useAuthContext} from "../../context/AuthContext.jsx";
 
 export default function FamilyRegistrationForm() {
+  const { register } = useAuthContext();
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -89,15 +92,33 @@ export default function FamilyRegistrationForm() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+
+    await register.mutateAsync({
+      firstname:"Jaxon",
+      lastname: "Cross",
+      email:"jaxon@example.com",
+      phoneNumber:"1234567",
+      password:"password1234",
+      role:"family"
+    });
+
+    if(register.isSuccess) {
+      alert("Account created successfully!");
+    }
+
+    if(register.isError) {
+      alert("Error creating account!");
+    }
 
     const isValid = validateForm();
     if (!isValid) return;
     // temporary console.log, need to be removed after adding API
     if (isValid) {
       console.log('Form Submitted Successfully:', formData);
-      //API here
+      await register.mutateAsync(formData);
     }
   };
 

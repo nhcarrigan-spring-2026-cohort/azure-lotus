@@ -7,6 +7,7 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    // TODO: use actual login form inputs
     await login.mutateAsync({
       email: 'user@example.com',
       password: 'string1234'
