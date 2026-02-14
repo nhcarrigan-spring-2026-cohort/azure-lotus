@@ -13,6 +13,7 @@ if ENV_FILE.exists():
 class Settings:
     # App
     APP_NAME: str = "Azure Lotus"
+    VERSION: str = "0.1.0"
     ENV: str = os.getenv("ENV", "development")
 
     # Security
