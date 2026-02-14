@@ -1,17 +1,16 @@
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException, Response, status
+from sqlmodel import Session
 from starlette.responses import JSONResponse
 
 from core.auth import security
 from src.core.auth.security import hash_password, verify_password
-
-from typing import Any
-
-from sqlmodel import Session
-
 from src.core.database.session import get_session
 from src.features.users.models import User, login_request, response, user_create
 
 auth_router = APIRouter()
+
 
 @auth_router.post("/register", response_model=response)
 def Register(
