@@ -36,7 +36,9 @@ dev = [
   "black>=24.2.0",
   "mypy>=1.8.0",
   "pre-commit>=3.6.0",
-  "isort>=6.1.0"
+  "isort>=6.1.0",
+  "flake8==7.0.0",
+  "autoflake>=2,<3"
 ]
 
 [tool.mypy]
@@ -52,3 +54,14 @@ script_location = "migrations"
 [build-system]
 requires = ["setuptools>=69.0.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.black]
+exclude = '''
+  src/migrations
+'''
+
+[tool.isort]
+skip_glob = ["/src/migrations/*"]
+
+[project.scripts]
+format = "scripts.format:run"
