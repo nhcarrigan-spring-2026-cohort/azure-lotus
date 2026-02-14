@@ -3,28 +3,27 @@ import Input from './Input';
 import Button from './Button';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useState } from 'react';
-import {useAuthContext} from "../../context/AuthContext.jsx";
-import {useMutation} from '@tanstack/react-query';
-import {registerRequest} from "../../api/auth.js";
-import {useNavigate} from 'react-router'
+import { useAuthContext } from '../../context/AuthContext.jsx';
+import { useMutation } from '@tanstack/react-query';
+import { registerRequest } from '../../api/auth.js';
+import { useNavigate } from 'react-router';
 
 export default function FamilyRegistrationForm() {
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const register = useMutation({
-        mutationFn: registerRequest,
-        onSuccess: (user) => {
-            // TODO: need better user feedback, using alert for now
-            alert("Account created successfully! Please login.");
-            navigate('/login');
-        },
-        onError: (error) => {
-            // TODO: frontend should show user the error, using alert for now
-            console.log(`Registration failed, ${JSON.stringify(error.message)}`);
-            alert(`Registration failed: ${error.message}`);
-        }
-    })
+    mutationFn: registerRequest,
+    onSuccess: (user) => {
+      // TODO: need better user feedback, using alert for now
+      alert('Account created successfully! Please login.');
+      navigate('/login');
+    },
+    onError: (error) => {
+      // TODO: frontend should show user the error, using alert for now
+      console.log(`Registration failed, ${JSON.stringify(error.message)}`);
+      alert(`Registration failed: ${error.message}`);
+    },
+  });
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -118,12 +117,12 @@ export default function FamilyRegistrationForm() {
 
     if (isValid) {
       await register.mutateAsync({
-        firstname:formData.firstName,
+        firstname: formData.firstName,
         lastname: formData.lastName,
         email: formData.email,
-        phoneNumber:formData.phone,
-        password:formData.password,
-        role:"family"
+        phoneNumber: formData.phone,
+        password: formData.password,
+        role: 'family',
       });
     }
   };
