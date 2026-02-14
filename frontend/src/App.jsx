@@ -6,6 +6,7 @@ import Explained from './pages/explained.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import NotFound from './pages/NotFound.jsx';
+import InviteVolunteers from './pages/InviteVolunteers.jsx';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/explained" element={<Explained />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/invitevolunteers" element={<InviteVolunteers />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
