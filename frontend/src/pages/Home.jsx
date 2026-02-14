@@ -1,4 +1,5 @@
 import useTitle from '../components/hooks/useTitle';
+import Card from '../components/ui/Card';
 import './Home.css';
 
 export default function Home() {

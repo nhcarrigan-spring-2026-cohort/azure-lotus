@@ -10,6 +10,7 @@ export default function Button({
   const buttonClass = `btn btn-${variant} btn-${size} ${className}`;
 
   return (
+    
     <button className={buttonClass} {...props}>
       {children}
     </button>

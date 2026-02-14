@@ -1,0 +1,23 @@
+
+/* Base styles are mobile friendly */
+.card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    height: auto;
+    padding: 8px;
+}
+
+.card{
+    background-color: white;
+    width: 90%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
