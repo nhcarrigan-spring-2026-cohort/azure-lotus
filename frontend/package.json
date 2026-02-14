@@ -12,6 +12,7 @@
 	},
 	"dependencies": {
 		"@tanstack/react-query": "^5.90.20",
+		"axios": "^1.13.4",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
 		"react-icons": "^5.5.0",

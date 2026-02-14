@@ -1,9 +1,12 @@
 import { Link } from 'react-router';
-import { useState } from 'react';
 import './Navbar.css';
+import { useState } from 'react';
+import { useAuthContext } from '../context/AuthContext';
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+
+  const { isAuthenticated, logout } = useAuthContext();
 
   function closeMenu() {
     setOpen(false);
@@ -40,12 +43,20 @@ export default function Navbar() {
           <Link to="/explained" onClick={closeMenu}>
             How it works
           </Link>
-          <Link to="/Login" onClick={closeMenu}>
-            Login
-          </Link>
-          <Link to="/signup" onClick={closeMenu}>
-            Sign up
-          </Link>
+          {isAuthenticated ? (
+            <div className="link-button" onClick={logout}>
+              Logout
+            </div>
+          ) : (
+            <>
+              <Link to="/Login" onClick={closeMenu}>
+                Login
+              </Link>
+              <Link to="/signup" onClick={closeMenu}>
+                Sign up
+              </Link>
+            </>
+          )}
         </nav>
       </header>
     </>

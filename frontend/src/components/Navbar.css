@@ -57,13 +57,14 @@
   gap: 20px;
 }
 
-.navbar-right a {
+.navbar-right a, .link-button {
   text-decoration: none;
   color: #000;
   font-weight: 600;
+  cursor: pointer;
 }
 
-.navbar-right a:hover {
+.navbar-right a:hover, .link-button:hover {
   text-decoration: underline;
 }
 

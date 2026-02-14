@@ -1,7 +1,15 @@
 import { Link } from 'react-router';
 import './Login.css';
+import { useAuthContext } from '../context/AuthContext.jsx';
 
 export default function Login() {
+  const { login } = useAuthContext();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    await login.mutateAsync({ username: 'emilys', password: 'emilyspass' });
+  };
+
   return (
     <>
       <div className="login-page">
@@ -38,7 +46,12 @@ export default function Login() {
               />
             </div>
 
-            <button className="login-button" type="button">
+            <button
+              className="login-button"
+              type="button"
+              onClick={handleLogin}
+              disabled={login.isPending}
+            >
               LOG IN ➡️
             </button>
           </form>
