@@ -1,7 +1,4 @@
 import { createContext, useContext, useState } from 'react';
-// import api from '../lib/axios.js';
-// import {useMutation} from '@tanstack/react-query';
-// import {useNavigate} from 'react-router'
 
 const AuthContext = createContext(null);
 
@@ -15,19 +12,6 @@ export function AuthProvider({ children }) {
     setAccessToken(payload.access_token);
     setUser(payload.user_info);
   };
-
-  // let navigate = useNavigate()
-
-  // const register = useMutation({
-  //     mutationFn: registerRequest,
-  //     onSuccess: (user) => {
-  //         console.log(`Registration successful, ${JSON.stringify(user)}`);
-  //     },
-  //     onError: (error) => {
-  //         // TODO: frontend should show user the error
-  //         console.log(`Registration failed, ${JSON.stringify(error.message)}`);
-  //     }
-  // })
 
   const logout = () => {
     // TODO: use backend logout endpoint
