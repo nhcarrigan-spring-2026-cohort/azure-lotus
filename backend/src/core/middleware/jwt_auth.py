@@ -1,9 +1,12 @@
+from typing import Optional
+
 from fastapi import Request, status
+from jwt import ExpiredSignatureError, PyJWTError, decode
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse, Response
-from jwt import decode, ExpiredSignatureError, PyJWTError
+
 from src.core.setting import Settings
-from typing import Optional
+
 
 class JWTAuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -43,7 +46,9 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
             if not Settings.JWT_SECRET_KEY:
                 return JSONResponse(
                     status_code=500,
-                    content={"detail": "Server configuration error: JWT secret key not set"}
+                    content={
+                        "detail": "Server configuration error: JWT secret key not set"
+                    },
                 )
 
             payload = decode(
@@ -57,23 +62,23 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
             if email is None:
                 return JSONResponse(
                     status_code=401,
-                    content={"detail": "Token malformed - missing email/user_id"}
+                    content={"detail": "Token malformed - missing email/user_id"},
                 )
 
-            request.state.current_user = {"email": email, "roles": payload.get("roles", [])}
+            request.state.current_user = {
+                "email": email,
+                "roles": payload.get("roles", []),
+            }
 
         except ExpiredSignatureError:
             return JSONResponse(
-                status_code=401,
-                content={"detail": "Access token has expired"}
+                status_code=401, content={"detail": "Access token has expired"}
             )
 
         except PyJWTError as e:
             return JSONResponse(
-                status_code=401,
-                content={"detail": f"Invalid token: {str(e)}"}
+                status_code=401, content={"detail": f"Invalid token: {str(e)}"}
             )
 
         response: Response = await call_next(request)
         return response
-

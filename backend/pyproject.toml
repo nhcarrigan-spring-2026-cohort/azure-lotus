@@ -52,3 +52,14 @@ script_location = "migrations"
 [build-system]
 requires = ["setuptools>=69.0.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.black]
+exclude = '''
+  src/migrations
+'''
+
+[tool.isort]
+skip_glob = ["/src/migrations/*"]
+
+[project.scripts]
+format = "scripts.format:run"
