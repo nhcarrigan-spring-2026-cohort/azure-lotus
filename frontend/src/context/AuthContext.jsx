@@ -1,28 +1,32 @@
 import { createContext, useContext, useState } from 'react';
 import api from '../lib/axios.js';
 import { useMutation } from '@tanstack/react-query';
+import {useNavigate} from 'react-router'
 
 const AuthContext = createContext(null);
 
 /* Requests */
-const loginRequest = async ({ username, password }) => {
+const loginRequest = async ({ email, password }) => {
   const { data } = await api.post('/auth/login', {
-    username,
+    email,
     password,
   });
   return data;
 };
 
 export function AuthProvider({ children }) {
-  const [accessToken, setAccessToken] = useState(null);
+  const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  let navigate = useNavigate()
 
   const login = useMutation({
     mutationFn: loginRequest,
     onSuccess: (user) => {
       console.log(`Login successful, ${JSON.stringify(user)}`);
-      setAccessToken(user.accessToken);
       setIsAuthenticated(true);
+      setUser(user.user_info);
+      navigate('/')
     },
   });
 
@@ -34,8 +38,8 @@ export function AuthProvider({ children }) {
   const authValue = {
     login,
     logout,
+    user,
     isAuthenticated,
-    accessToken,
   };
 
   return (

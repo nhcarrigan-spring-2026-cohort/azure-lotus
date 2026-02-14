@@ -7,7 +7,10 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    await login.mutateAsync({ username: 'emilys', password: 'emilyspass' });
+    await login.mutateAsync({
+      email: 'user@example.com',
+      password: 'string1234'
+    });
   };
 
   return (
