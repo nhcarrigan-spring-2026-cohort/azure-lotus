@@ -4,9 +4,27 @@ import Button from './Button';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useState } from 'react';
 import {useAuthContext} from "../../context/AuthContext.jsx";
+import {useMutation} from '@tanstack/react-query';
+import {registerRequest} from "../../api/auth.js";
+import {useNavigate} from 'react-router'
 
 export default function FamilyRegistrationForm() {
-  const { register } = useAuthContext();
+
+  const navigate = useNavigate()
+
+  const register = useMutation({
+        mutationFn: registerRequest,
+        onSuccess: (user) => {
+            // TODO: need better user feedback, using alert for now
+            alert("Account created successfully! Please login.");
+            navigate('/login');
+        },
+        onError: (error) => {
+            // TODO: frontend should show user the error, using alert for now
+            console.log(`Registration failed, ${JSON.stringify(error.message)}`);
+            alert(`Registration failed: ${error.message}`);
+        }
+    })
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -95,30 +113,18 @@ export default function FamilyRegistrationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
-    await register.mutateAsync({
-      firstname:"Jaxon",
-      lastname: "Cross",
-      email:"jaxon@example.com",
-      phoneNumber:"1234567",
-      password:"password1234",
-      role:"family"
-    });
-
-    if(register.isSuccess) {
-      alert("Account created successfully!");
-    }
-
-    if(register.isError) {
-      alert("Error creating account!");
-    }
-
     const isValid = validateForm();
     if (!isValid) return;
-    // temporary console.log, need to be removed after adding API
+
     if (isValid) {
-      console.log('Form Submitted Successfully:', formData);
-      await register.mutateAsync(formData);
+      await register.mutateAsync({
+        firstname:formData.firstName,
+        lastname: formData.lastName,
+        email: formData.email,
+        phoneNumber:formData.phone,
+        password:formData.password,
+        role:"family"
+      });
     }
   };
 

@@ -1,16 +1,39 @@
+import { useState } from 'react';
 import { Link } from 'react-router';
 import './Login.css';
 import { useAuthContext } from '../context/AuthContext.jsx';
+import {useMutation} from '@tanstack/react-query';
+import { loginRequest } from '../api/auth.js';
+import {useNavigate} from 'react-router'
 
 export default function Login() {
-  const { login } = useAuthContext();
+  const [formData, setFormData] = useState({
+    email: 'user@example.com',
+    password: 'string1234',
+  });
+
+  const { loginSuccess } = useAuthContext();
+
+  const navigate = useNavigate()
+
+  const login = useMutation({
+    mutationFn: loginRequest,
+    onSuccess: (user) => {
+      console.log(`Login successful, ${JSON.stringify(user)}`);
+      loginSuccess(user);
+      navigate('/')
+    },
+    onError: (error) => {
+      console.error(`Login failed: ${error.message}`);
+      alert(`Login failed: ${error.message}`);
+    }
+  });
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    // TODO: use actual login form inputs
     await login.mutateAsync({
-      email: 'user@example.com',
-      password: 'string1234'
+      email: formData.email,
+      password: formData.password
     });
   };
 
@@ -33,6 +56,8 @@ export default function Login() {
                 className="login-input"
                 type="text"
                 placeholder="Enter your username"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
                 required
               />
             </div>
@@ -46,6 +71,8 @@ export default function Login() {
                 className="login-input"
                 type="password"
                 placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
                 required
               />
             </div>
