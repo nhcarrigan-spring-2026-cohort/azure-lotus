@@ -24,8 +24,8 @@ export default function Login() {
       navigate('/');
     },
     onError: (error) => {
-      console.error(`Login failed: ${error.message}`);
-      alert(`Login failed: ${error.message}`);
+      console.error(`Login failed: ${error.data.detail}`);
+      alert(`Login failed: ${error.data.detail}`);
     },
   });
 

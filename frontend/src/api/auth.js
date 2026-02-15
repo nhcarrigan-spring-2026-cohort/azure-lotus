@@ -1,11 +1,15 @@
 import api from '../lib/axios.js';
 
 export const loginRequest = async ({ email, password }) => {
-  const { data } = await api.post('/auth/login', {
-    email,
-    password,
-  });
-  return data;
+  try{
+    const { data } = await api.post('/auth/login', {
+      email,
+      password,
+    });
+    return data;
+  }catch (error) {
+    throw error.response;
+  }
 };
 
 /**
@@ -38,7 +42,6 @@ export const registerRequest = async ({
     });
     return data;
   } catch (e) {
-    // TODO: Backend should return more specific error messages
-    throw e; // rethrow for react query to handle
+    throw e.response // rethrow for react query to handle
   }
 };

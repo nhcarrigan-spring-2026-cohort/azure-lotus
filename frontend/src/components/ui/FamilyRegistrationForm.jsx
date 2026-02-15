@@ -20,8 +20,8 @@ export default function FamilyRegistrationForm() {
     },
     onError: (error) => {
       // TODO: frontend should show user the error, using alert for now
-      console.log(`Registration failed, ${JSON.stringify(error.message)}`);
-      alert(`Registration failed: ${error.message}`);
+      console.error(`Registration failed: ${error.data.detail}`);
+      alert(`Registration failed: ${error.data.detail}`);
     },
   });
 
