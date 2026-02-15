@@ -7,10 +7,19 @@ from src.core.auth.auth import auth_router
 from src.core.setting import Settings
 from src.core.middleware.jwt_auth import JWTAuthMiddleware
 from sqlalchemy import text
+from core.setting import Settings
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title=Settings.APP_NAME)
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.add_middleware(JWTAuthMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = Settings.BACKEND_CORS_ORIGINS,
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"],
+)
 
 logging.basicConfig(
     level=logging.INFO,

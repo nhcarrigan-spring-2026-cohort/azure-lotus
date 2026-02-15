@@ -3,8 +3,28 @@ import Input from './Input';
 import Button from './Button';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useState } from 'react';
+import { useAuthContext } from '../../context/AuthContext.jsx';
+import { useMutation } from '@tanstack/react-query';
+import { registerRequest } from '../../api/auth.js';
+import { useNavigate } from 'react-router';
 
 export default function FamilyRegistrationForm() {
+  const navigate = useNavigate();
+
+  const register = useMutation({
+    mutationFn: registerRequest,
+    onSuccess: (user) => {
+      // TODO: need better user feedback, using alert for now
+      alert('Account created successfully! Please login.');
+      navigate('/login');
+    },
+    onError: (error) => {
+      // TODO: frontend should show user the error, using alert for now
+      console.error(`Registration failed: ${error.data.detail}`);
+      alert(`Registration failed: ${error.data.detail}`);
+    },
+  });
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -89,15 +109,21 @@ export default function FamilyRegistrationForm() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const isValid = validateForm();
     if (!isValid) return;
-    // temporary console.log, need to be removed after adding API
+
     if (isValid) {
-      console.log('Form Submitted Successfully:', formData);
-      //API here
+      await register.mutateAsync({
+        firstname: formData.firstName,
+        lastname: formData.lastName,
+        email: formData.email,
+        phoneNumber: formData.phone,
+        password: formData.password,
+        role: 'family',
+      });
     }
   };
 
