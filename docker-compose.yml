@@ -5,6 +5,8 @@ services:
       dockerfile: src/Dockerfile
     ports:
       - 8000:8000
+    env_file:
+      - ./backend/.env
     environment:
       DATABASE_URL: "postgresql://admin:password@database:5432/senior_checkin"
       PYTHONPATH: /app/src

@@ -1,39 +1,29 @@
 import { createContext, useContext, useState } from 'react';
-import api from '../lib/axios.js';
-import { useMutation } from '@tanstack/react-query';
 
 const AuthContext = createContext(null);
 
-/* Requests */
-const loginRequest = async ({ username, password }) => {
-  const { data } = await api.post('/auth/login', {
-    username,
-    password,
-  });
-  return data;
-};
-
 export function AuthProvider({ children }) {
-  const [accessToken, setAccessToken] = useState(null);
+  const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [accessToken, setAccessToken] = useState(null);
 
-  const login = useMutation({
-    mutationFn: loginRequest,
-    onSuccess: (user) => {
-      console.log(`Login successful, ${JSON.stringify(user)}`);
-      setAccessToken(user.accessToken);
-      setIsAuthenticated(true);
-    },
-  });
+  const loginSuccess = (payload) => {
+    setIsAuthenticated(true);
+    setAccessToken(payload.access_token);
+    setUser(payload.user_info);
+  };
 
   const logout = () => {
     // TODO: use backend logout endpoint
     setIsAuthenticated(false);
+    setAccessToken(null);
+    setUser(null);
   };
 
   const authValue = {
-    login,
+    loginSuccess,
     logout,
+    user,
     isAuthenticated,
     accessToken,
   };
