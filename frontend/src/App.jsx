@@ -23,7 +23,7 @@ export default function App() {
           <Route path="/explained" element={<Explained />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/invitevolunteers" element={<InviteVolunteers />} />  
+          <Route path="/invitevolunteers" element={<InviteVolunteers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
