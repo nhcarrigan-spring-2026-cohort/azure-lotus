@@ -3,9 +3,9 @@ import Input from './ui/Input';
 import Button from './ui/Button';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { useState } from 'react';
-import { useAuthContext } from '../../context/AuthContext.jsx';
+import { useAuthContext } from '../context/AuthContext.jsx';
 import { useMutation } from '@tanstack/react-query';
-import { registerRequest } from '../../api/auth.js';
+import { registerRequest } from '../api/auth.js';
 import { useNavigate } from 'react-router';
 
 export default function FamilyRegistrationForm() {
