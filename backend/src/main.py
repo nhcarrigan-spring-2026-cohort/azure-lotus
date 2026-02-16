@@ -2,6 +2,7 @@ import logging
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from sqlalchemy import text
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -59,3 +60,15 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
         content={"detail": exc.detail},
         headers=exc.headers if exc.headers else None,
     )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(
+    request: Request, exc_validation: RequestValidationError
+):
+    return JSONResponse(status_code=422, content={"detail": "validation error"})
+
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc_general: Exception):
+    return JSONResponse(status_code=500, content={"detail": "internal server error"})
