@@ -6,7 +6,6 @@
   justify-content: center;
   align-items: center;
   gap: 12px;
-  margin: 10px;
   transition:
     transform 0.1s ease,
     filter 0.2s ease;
@@ -22,13 +21,6 @@
 .btn:active {
   transform: translateY(4px);
   filter: brightness(0.95);
-}
-
-.btn-disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none !important;
 }
 
 /* VARIANTS */
@@ -133,4 +125,13 @@
   border-radius: 20px;
   font-size: 1.5rem;
   flex-direction: column;
+}
+
+.btn-disabled {
+  background-color: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none !important;
+  filter: none !important;
 }

@@ -1,0 +1,14 @@
+.inviteVolunteersPage {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f4f4f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.contentContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
