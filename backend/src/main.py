@@ -34,6 +34,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 @app.get("/")
 async def root():
     return {"App Name":Settings.APP_NAME, "Version":Settings.VERSION, "message": "Hello World"}
@@ -50,14 +51,11 @@ def health():
 
 
 @app.exception_handler(StarletteHTTPException)
-@app.exception_handler(HTTPException)  
+@app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-    logger.warning(
-        f"HTTP {exc.status_code} - {exc.detail} - Path: {request.url.path}"
-        )
+    logger.warning(f"HTTP {exc.status_code} - {exc.detail} - Path: {request.url.path}")
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.detail},
         headers=exc.headers if exc.headers else None,
     )
-
