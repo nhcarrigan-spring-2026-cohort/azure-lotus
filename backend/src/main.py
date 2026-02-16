@@ -10,9 +10,19 @@ from src.core.database.session import engine
 from src.core.middleware.jwt_auth import JWTAuthMiddleware
 from src.core.setting import Settings
 from src.features.checkins.routers import router as check_in_router
+from sqlalchemy import text
+from core.setting import Settings
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title=Settings.APP_NAME, version=Settings.VERSION)
 app.add_middleware(JWTAuthMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = Settings.BACKEND_CORS_ORIGINS,
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"],
+)
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(check_in_router, prefix="/check_in", tags=["checkin"])

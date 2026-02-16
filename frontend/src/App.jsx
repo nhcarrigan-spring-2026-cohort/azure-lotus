@@ -6,6 +6,7 @@ import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import NotFound from './pages/NotFound.jsx';
+import InviteVolunteers from './pages/InviteVolunteers.jsx';
 
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/query-client.js';
@@ -16,13 +17,13 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Navbar />
-
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/explained" element={<Explained />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/invitevolunteers" element={<InviteVolunteers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
