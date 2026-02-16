@@ -1,4 +1,4 @@
-import './Button.css';
+import styles from './Button.module.css';
 
 export default function Button({
   children,
@@ -7,7 +7,13 @@ export default function Button({
   className = '',
   ...props
 }) {
-  const buttonClass = `btn btn-${variant} btn-${size} ${className}`;
+  const buttonClass = [
+    styles.btn,
+    styles[`btn-${variant}`],
+    styles[`btn-${size}`],
+    props.disabled ? styles['btn-disabled'] : '',
+    className,
+  ].join(' ');
 
   return (
     <button className={buttonClass} {...props}>
