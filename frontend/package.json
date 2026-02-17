@@ -8,7 +8,9 @@
     "build": "vite build",
     "lint": "biome lint --write",
     "format": "biome format --write",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.20",
