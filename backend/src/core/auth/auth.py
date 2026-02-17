@@ -12,7 +12,7 @@ from src.features.users.models import User, login_request, response, user_create
 auth_router = APIRouter()
 
 
-@auth_router.post("/register", response_model=response)
+@auth_router.post("/register", response_model=response, status_code=201)
 def Register(
     user: user_create, response: Response, db: Session = Depends(get_session)
 ) -> Any:
