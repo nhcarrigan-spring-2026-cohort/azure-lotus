@@ -4,7 +4,7 @@ import './Login.css';
 import { useAuthContext } from '../context/AuthContext.jsx';
 import { useMutation } from '@tanstack/react-query';
 import { loginRequest } from '../api/auth.js';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -15,13 +15,15 @@ export default function Login() {
   const { loginSuccess } = useAuthContext();
 
   const navigate = useNavigate();
+  const location = useLocation()
+  const fromLocation = location.state?.from?.pathname || '/';
 
   const login = useMutation({
     mutationFn: loginRequest,
     onSuccess: (user) => {
       console.log(`Login successful, ${JSON.stringify(user)}`);
       loginSuccess(user);
-      navigate('/');
+      navigate(fromLocation, {replace: true});
     },
     onError: (error) => {
       console.error(`Login failed: ${error.data.detail}`);
