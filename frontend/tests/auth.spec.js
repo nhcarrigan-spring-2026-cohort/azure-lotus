@@ -151,4 +151,51 @@ test.describe('Login flow', () => {
     })
 })
 
+test.describe('Protected routes', () => {
+    const protectedRoutes = ['dashboard']
+
+    test('redirects to login page if not logged in', async ({page}) => {
+        await Promise.all(protectedRoutes.map(async route => {
+            await page.goto(`${baseUrl}/${route}`)
+            await expect(page).toHaveURL(`${baseUrl}/login`)
+        }))
+    })
+
+    test('redirects to original page after logged in', async ({page}) => {
+        const originalProtectedRoute = `${baseUrl}/${protectedRoutes[0]}`
+        let requestMade = false
+
+        await page.route('**/auth/login', async(route)=> {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    "user_info": {
+                        "id": 1,
+                        "email": "user@example.com",
+                        "phone_number": "string",
+                        "first_name": "string",
+                        "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMSIsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSIsImV4cCI6MTc3MTI5OTM2OCwiaWF0IjoxNzcxMjk3NTY4fQ.OH_DGvWr1aTJg8_DcLi4ZGHhtTR_2PKuGH0igPNBhqk"
+                    }
+                })
+            })
+            requestMade = true
+        })
+
+        await page.goto(originalProtectedRoute)
+        // 1. redirects to login page
+        await expect(page).toHaveURL(`${baseUrl}/login`)
+
+        await page.getByLabel(/username/i).fill('user@example.com')
+        await page.getByLabel(/password/i).fill('password1234')
+        await page.getByRole('button', {name: /log in/i }).click()
+
+        // 2. redirects back to original page after login, without another redirection to the login page
+        await expect(page).toHaveURL(originalProtectedRoute)
+        await expect(requestMade).toBe(true)
+
+
+    })
+})
+
 
