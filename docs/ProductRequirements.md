@@ -15,7 +15,6 @@ Our web app provides a simple platform where family members create profiles for 
 | :---- | :---- |
 | Seniors(Elderly people living alone) | Simple way to confirm they’re Okay |
 | Volunteers(Community Helpers, Neighbors, Friends) | Easy way to help  |
-| Admins \-do we need them? | Manage all users and monitor the system. |
 
 **Goals** 
 
@@ -68,35 +67,26 @@ Our web app provides a simple platform where family members create profiles for 
 
 4. **Do we need admins as Users? \-need to fill this after we decide**
 
-**Admins**
-
-| Permissions | Allowed |
-| :---- | :---- |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
-|  |  |
 
 **Functional Requirements**  
 **1.Authentication System**  
 i.Users shall register with first name, last name, email, phone number, password, and role.
 
- ii.Users shall login with email and password.
+ii.Users shall login with email and password.
 
- iii.The system shall issue a short-lived access token (15 minutes) in the response body  and a long-lived refresh token (7 days) as an HTTP-only cookie.
+iii.The system shall issue a short-lived access token (15 minutes) in the response body  and a long-lived refresh token (7 days) as an HTTP-only cookie.
 
 iv.The system shall provide a refresh endpoint that issues a new access token using the
 
 refresh token cookie.
 
-V. The system shall provide a logout endpoint that clears the refresh token cookie.
+v. The system shall provide a logout endpoint that clears the refresh token cookie.
 
 vi. All endpoints except register, login, refresh, and public check-in pages shall require a valid access token.
 
 vii. Protected endpoints shall enforce role-based access control returning 403 for unauthorized roles.
 
-**2\. Senior Profile Management**  
+**2. Senior Profile Management**  
  i.Family members shall create senior profiles with first name, last name, phone number,  emergency contact name, emergency contact phone.
 
  ii.Family members shall create multiple senior profiles.
@@ -105,11 +95,11 @@ vii. Protected endpoints shall enforce role-based access control returning 403 f
 
  iv. Volunteers shall only view seniors assigned to them.
 
-V. Admins shall view all senior profiles.
+ v. Admins shall view all senior profiles.
 
-Vi. Each senior profile shall have an assigned volunteer 
+vi. Each senior profile shall have an assigned volunteer 
 
-**3\. Senior Check-In Page**
+**3. Senior Check-In Page**
 
 Seniors shall access a simple check-in page via the app.
 
@@ -160,7 +150,7 @@ v.Volunteers and family members shall resolve alerts by providing resolution not
 
 vi.Admins shall view and resolve all alerts—needed or no?
 
-**6\. Volunteer Dashboard**  
+**6. Volunteer Dashboard**  
 i.The volunteer dashboard shall display three sections: Urgent (missed check-ins),Checked In (completed today), and Waiting (deadline not yet reached).
 
 ii.The Urgent section shall show senior name, phone number, last check-in date, and emergency contact information with a Call Now action.
@@ -173,7 +163,7 @@ v.The dashboard shall display summary counts for each section at the top.
 
 vi.Volunteers shall only see their assigned seniors on the dashboard.
 
-**7\. Family member dashboard**
+**7. Family member dashboard**
 
 i.Family members shall see a list of their seniors with current check-in status.
 
@@ -199,7 +189,7 @@ iv.Volunteers shall view their schedules showing which seniors they check on and
 * All production traffic shall use HTTPS (secure=True on cookies).  
 * CORS shall be configured with specific allowed origins 
 
-**2\. Reliability**
+**2. Reliability**
 
 * The system shall run all services (frontend, backend, database) in Docker containers.  
 * Database data shall persist across container restarts using Docker volumes.  
@@ -224,8 +214,7 @@ iv.Volunteers shall view their schedules showing which seniors they check on and
 			
 
 | 1.Setup & Foundation | Setup, Project structure, UI Designs, UML Diagram,Schema and models created. |
-| :---- | :---- |
-| 2\. Authentication and Basic APIs | Docker Running, Login/Register working, frontend auth working. |
-| 3\. Core features and integration | Complete all senior endpoints with proper role based access. Family members should be able to create senior Profiles, volunteers should be able see assigned seniors.  |
-| 4\. Complete Features  | Alerts, Scheduling, App should be demo-ready  |
+| 2. Authentication and Basic APIs | Docker Running, Login/Register working, frontend auth working. |
+| 3. Core features and integration | Complete all senior endpoints with proper role based access. Family members should be able to create senior Profiles, volunteers should be able see assigned seniors.  |
+| 4. Complete Features  | Alerts, Scheduling, App should be demo-ready  |
 
