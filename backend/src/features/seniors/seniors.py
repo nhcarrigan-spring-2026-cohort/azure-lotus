@@ -35,7 +35,7 @@ def create_senior_endpoint(senior: create_senior, request: Request, db: Session 
         if not email:
             raise HTTPException(401, detail="Malformed JWT")
 
-        # 2️⃣ Ensure the creator is a family user
+        # Ensure the creator is a family user
         try:
             family_user = db.query(User).filter(User.email == email).one()
             print("first", family_user.roles)
@@ -48,7 +48,7 @@ def create_senior_endpoint(senior: create_senior, request: Request, db: Session 
         except NoResultFound:
             raise HTTPException(401, detail="Family user not found")
 
-        # 3️⃣ Check if assigned volunteer exists and is actually a volunteer
+        #Check if assigned volunteer exists and is actually a volunteer
         try:
             assigned_volunteer = db.query(User).filter(User.email == senior.assigned_volunteer_email).one() 
             print("second",assigned_volunteer.roles)
@@ -62,7 +62,7 @@ def create_senior_endpoint(senior: create_senior, request: Request, db: Session 
         except NoResultFound:
             raise HTTPException(404, detail="Assigned volunteer not found or not a volunteer")
 
-        # Check if the senior user exists
+        #Check if the senior user exists
         try:
             senior_user = db.query(User).filter(User.email == senior.senior_email).one()
             if  "senior" not in senior_user.roles: 
@@ -75,7 +75,7 @@ def create_senior_endpoint(senior: create_senior, request: Request, db: Session 
             raise HTTPException(404, detail="Senior user not found")
 
 
-        # 5️⃣ Ensure senior profile does not already exist
+        #Ensure senior profile does not already exist
         existing_profile = db.query(SeniorProfile).filter(SeniorProfile.user_id == senior_user.id).first()
         if existing_profile:
             raise HTTPException(400, detail="Senior profile already exists")
