@@ -15,7 +15,7 @@ senior_router = APIRouter()
 def create_senior_endpoint(senior: create_senior, request: Request, db: Session = Depends(get_session)):
     try:
 
-        # 1️⃣ Extract JWT from header
+        #Extract JWT from header
         auth_header = request.headers.get("Authorization")
         if not auth_header:
             raise HTTPException(status_code=401, detail="Missing token")
