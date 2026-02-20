@@ -1,20 +1,23 @@
 import logging
-
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
-from sqlalchemy import text
-from starlette.exceptions import HTTPException as StarletteHTTPException
-
-from src.core.auth.auth import auth_router
-from src.core.database.session import engine
-from src.core.middleware.jwt_auth import JWTAuthMiddleware
-from src.core.setting import Settings
-from src.features.checkins.routers import router as check_in_router
-from sqlalchemy import text
-from core.setting import Settings
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from sqlalchemy import text
 
+# Your routers
+from src.features.seniors.seniors import senior_router
+from src.features.checkins.routers import router as check_in_router
+from src.core.auth.auth import auth_router
+
+# Database & settings
+from src.core.database.session import engine
+from src.core.setting import Settings
+
+# Middleware
+from src.core.middleware.jwt_auth import JWTAuthMiddleware
 app = FastAPI(title=Settings.APP_NAME, version=Settings.VERSION)
+
 app.add_middleware(JWTAuthMiddleware)
 app.add_middleware(
     CORSMiddleware,
@@ -26,6 +29,7 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(check_in_router, prefix="/check_in", tags=["checkin"])
+app.include_router(senior_router, tags=["seniors"])
 
 
 logging.basicConfig(
