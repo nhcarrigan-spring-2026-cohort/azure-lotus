@@ -77,8 +77,25 @@ ORDER BY table_name, column_name;
 
 Expected: all listed IDs should show `data_type = uuid`.
 
+#### 6.2 Seed baseline data
 
-[More Abour Migration](
+```bash
+docker compose exec -e PYTHONPATH=/app app python src/scripts/seed.py
+```
+
+#### 6.3 Verify seeded data
+
+```bash
+docker compose exec database psql -U admin -d senior_checkin -c "SELECT COUNT(*) AS users_count FROM users;"
+docker compose exec database psql -U admin -d senior_checkin -c "SELECT COUNT(*) AS relationships_count FROM relationships;"
+docker compose exec database psql -U admin -d senior_checkin -c "SELECT COUNT(*) AS checkins_count FROM checkins;"
+docker compose exec database psql -U admin -d senior_checkin -c "SELECT COUNT(*) AS alerts_count FROM alerts;"
+```
+
+Expected: `users_count >= 2`, and other counts `>= 1`.
+
+
+[More About Migration](
     https://medium.com/@johnidouglasmarangon/using-migrations-in-python-sqlalchemy-with-alembic-docker-solution-bd79b219d6a)
 
 #### 7. Run the Backend (FastAPI)
