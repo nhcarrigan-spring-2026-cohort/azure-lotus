@@ -17,7 +17,8 @@ class CheckInMethod(str, Enum):
     SELF = "self"
     VOLUNTEER = "volunteer"
     SYSTEM = "system"
-    
+
+
 class InvitationStatus(str, Enum):
     PENDING = "pending"
     ACCEPTED = "accepted"

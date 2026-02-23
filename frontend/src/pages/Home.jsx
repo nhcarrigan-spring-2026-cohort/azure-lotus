@@ -1,4 +1,5 @@
 import useTitle from '../components/hooks/useTitle';
+import Card from '../components/ui/Card';
 import './Home.css';
 import { useAuthContext } from '../context/AuthContext.jsx';
 

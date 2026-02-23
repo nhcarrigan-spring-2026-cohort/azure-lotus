@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from typing import Optional
+
 from sqlmodel import Field, SQLModel
+
 
 class SeniorProfile(SQLModel, table=True):
     __tablename__ = "senior_profiles"
@@ -14,6 +16,6 @@ class SeniorProfile(SQLModel, table=True):
     emergency_contact_phone: str
     is_verified: bool = Field(default=False)
     medical_info: Optional[str] = None
-    
+
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
