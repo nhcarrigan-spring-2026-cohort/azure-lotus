@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import styles from "./SeniorProfileForm.module.css";
-import Input from "./ui/Input";
-import Textarea from "./ui/Textarea";
-import Button from "./ui/Button";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import styles from './SeniorProfileForm.module.css';
+import Input from './ui/Input';
+import Textarea from './ui/Textarea';
+import Button from './ui/Button';
+import { useNavigate } from 'react-router-dom';
 
 export default function SeniorProfileForm() {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    address: "",
-    email: "",
-    phone: "",
-    emergencyContactName: "",
-    emergencyContactPhone: "",
-    medicalInfo: "",
-    frequency: "once",
-    checkInTimes: [""],
+    firstName: '',
+    lastName: '',
+    address: '',
+    email: '',
+    phone: '',
+    emergencyContactName: '',
+    emergencyContactPhone: '',
+    medicalInfo: '',
+    frequency: 'once',
+    checkInTimes: [''],
   });
 
   const [errors, setErrors] = useState({});
@@ -25,14 +25,14 @@ export default function SeniorProfileForm() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "frequency") {
+    if (name === 'frequency') {
       let newTimes = [...formData.checkInTimes];
-      if (value === "once") {
+      if (value === 'once') {
         // keep the first time (if any)
-        newTimes = newTimes.length > 0 ? [newTimes[0]] : [""];
-      } else if (value === "multiple") {
+        newTimes = newTimes.length > 0 ? [newTimes[0]] : [''];
+      } else if (value === 'multiple') {
         // ensure at least one time exists
-        if (newTimes.length === 0) newTimes = [""];
+        if (newTimes.length === 0) newTimes = [''];
       }
       setFormData({ ...formData, frequency: value, checkInTimes: newTimes });
     } else {
@@ -55,71 +55,71 @@ export default function SeniorProfileForm() {
 
     //validations
     if (!formData.firstName.trim()) {
-      newErrors.firstName = "First name is required.";
+      newErrors.firstName = 'First name is required.';
     } else if (!nameRegex.test(formData.firstName)) {
       newErrors.firstName =
         "Please enter a valid name. Names can include letters, hyphens, spaces, and apostrophes (e.g., O'Connor or Jean-Luc).";
     }
 
     if (!formData.lastName.trim()) {
-      newErrors.lastName = "Last name is required.";
+      newErrors.lastName = 'Last name is required.';
     } else if (!nameRegex.test(formData.lastName)) {
       newErrors.lastName =
         "Please enter a valid name. Names can include letters, hyphens, spaces, and apostrophes (e.g., O'Connor or Jean-Luc).";
     }
 
     if (!formData.address.trim()) {
-      newErrors.address = "Address is required.";
+      newErrors.address = 'Address is required.';
     } else if (!addressRegex.test(formData.address)) {
       newErrors.address =
-        "Please enter a complete address (at least 5 characters). You can include numbers, letters, and common symbols like # or -.";
+        'Please enter a complete address (at least 5 characters). You can include numbers, letters, and common symbols like # or -.';
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required.";
+      newErrors.email = 'Email is required.';
     } else if (!emailRegex.test(formData.email)) {
       newErrors.email =
-        "Please enter a valid email address (e.g., example@email.com).";
+        'Please enter a valid email address (e.g., example@email.com).';
     }
 
-    const normalizePhone = formData.phone.replace(/[^\d+]/g, "");
+    const normalizePhone = formData.phone.replace(/[^\d+]/g, '');
     if (!normalizePhone.trim()) {
-      newErrors.phone = "Phone number is required.";
+      newErrors.phone = 'Phone number is required.';
     } else if (!phoneRegex.test(normalizePhone)) {
       newErrors.phone =
-        "Please enter a valid phone number (e.g., +1234567890). It should be between 2 and 15 digits long.";
+        'Please enter a valid phone number (e.g., +1234567890). It should be between 2 and 15 digits long.';
     }
 
     if (!formData.emergencyContactName.trim()) {
-      newErrors.emergencyContactName = "Emergency contact name is required.";
+      newErrors.emergencyContactName = 'Emergency contact name is required.';
     } else if (!nameRegex.test(formData.emergencyContactName)) {
       newErrors.emergencyContactName =
         "Please enter a valid name. Names can include letters, hyphens, spaces, and apostrophes (e.g., O'Connor or Jean-Luc).";
     }
 
     if (!formData.emergencyContactPhone.trim()) {
-      newErrors.emergencyContactPhone = "Emergency contact phone is required.";
+      newErrors.emergencyContactPhone = 'Emergency contact phone is required.';
     } else if (!phoneRegex.test(formData.emergencyContactPhone)) {
       newErrors.emergencyContactPhone =
-        "Please enter a valid phone number (e.g., +1234567890). It should be between 2 and 15 digits long.";
+        'Please enter a valid phone number (e.g., +1234567890). It should be between 2 and 15 digits long.';
     }
 
     if (!formData.medicalInfo.trim()) {
       newErrors.medicalInfo =
-        "This field is required. Please provide the relevant medical information, or simply fill in none.";
+        'This field is required. Please provide the relevant medical information, or simply fill in none.';
     }
 
     // validate check-in times
     let timeErrors = [];
-    if (formData.frequency === "once") {
+    if (formData.frequency === 'once') {
       if (!formData.checkInTimes[0]) {
-        timeErrors[0] = "Please select a check-in time.";
+        timeErrors[0] = 'Please select a check-in time.';
       } else {
-        timeErrors[0] = "";
+        timeErrors[0] = '';
       }
-    } else if (formData.frequency === "multiple") {
+    } else if (formData.frequency === 'multiple') {
       timeErrors = formData.checkInTimes.map((time, idx) =>
-        time ? "" : `Time #${idx + 1} is required.`,
+        time ? '' : `Time #${idx + 1} is required.`,
       );
     }
     if (timeErrors.some((err) => err)) {
@@ -138,8 +138,8 @@ export default function SeniorProfileForm() {
     const isValid = validateForm();
     if (!isValid) return;
 
-    console.log("Form submitted successfully:", formData);
-    navigate("/invitevolunteers");
+    console.log('Form submitted successfully:', formData);
+    navigate('/invitevolunteers');
   };
 
   // handleTime
@@ -153,7 +153,7 @@ export default function SeniorProfileForm() {
     if (formData.checkInTimes.length < 5) {
       setFormData({
         ...formData,
-        checkInTimes: [...formData.checkInTimes, ""],
+        checkInTimes: [...formData.checkInTimes, ''],
       });
     }
   };
@@ -320,7 +320,7 @@ export default function SeniorProfileForm() {
               <option value="multiple">Multiple times a day</option>
             </select>
           </div>
-          {formData.frequency === "once" ? (
+          {formData.frequency === 'once' ? (
             <div>
               <label htmlFor="checkInTime0">Daily Check-in Time</label>
               <Input
@@ -328,7 +328,7 @@ export default function SeniorProfileForm() {
                 id="checkInTime0"
                 name="checkInTime0"
                 className={styles.checkInTime}
-                value={formData.checkInTimes[0] || ""}
+                value={formData.checkInTimes[0] || ''}
                 onChange={(e) => handleTimeChange(0, e.target.value)}
                 error={errors.checkInTimes?.[0]}
                 errorClassName={styles.errorTextBox}
