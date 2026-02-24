@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 settings.json
+
 # Distribution / packaging
 build/
 develop-eggs/
@@ -19,3 +20,10 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
+
+# Environment
+.env
+.venv/
+env/
+venv/
