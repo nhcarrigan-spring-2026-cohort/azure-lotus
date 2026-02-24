@@ -99,12 +99,12 @@ This will:
 ```
 === KEY TEST: Caregivers Notified ===
 For Senior Smith's check-in, these caregivers are notified:
- Caregiver One   | caregiver.one@test.com   |        1
- Caregiver Two   | caregiver.two@test.com   |        2
- Caregiver Three | caregiver.three@test.com |        3
+ Caregiver One   | caregiver.one@test.com
+ Caregiver Three | caregiver.three@test.com
+ Caregiver Two   | caregiver.two@test.com
 
 ✓ Test Complete!
-Result: ONE check-in notifies ALL 3 caregivers
+Result: ONE check-in notifies ALL 3 caregivers!
 ```
 
 ##### Manual verification of checkins table:

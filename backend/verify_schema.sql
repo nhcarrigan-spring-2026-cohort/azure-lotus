@@ -39,12 +39,12 @@ ON CONFLICT (email) DO UPDATE SET updated_at = NOW();
 \echo 'Created 4 users: 1 senior, 3 caregivers'
 
 -- Create relationships
-INSERT INTO relationships (id, senior_id, caregiver_id, priority, created_at) 
+INSERT INTO relationships (id, senior_id, caregiver_id, created_at) 
 VALUES 
-('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222', 1, NOW()),
-('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '11111111-1111-1111-1111-111111111111', '33333333-3333-3333-3333-333333333333', 2, NOW()),
-('cccccccc-cccc-cccc-cccc-cccccccccccc', '11111111-1111-1111-1111-111111111111', '44444444-4444-4444-4444-444444444444', 3, NOW())
-ON CONFLICT (id) DO UPDATE SET priority = EXCLUDED.priority;
+('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222', NOW()),
+('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '11111111-1111-1111-1111-111111111111', '33333333-3333-3333-3333-333333333333', NOW()),
+('cccccccc-cccc-cccc-cccc-cccccccccccc', '11111111-1111-1111-1111-111111111111', '44444444-4444-4444-4444-444444444444', NOW())
+ON CONFLICT (id) DO UPDATE SET senior_id = EXCLUDED.senior_id;
 
 \echo 'Created 3 relationships (senior -> 3 caregivers)'
 
@@ -64,10 +64,9 @@ SELECT first_name || ' ' || last_name AS name, email FROM users ORDER BY email;
 \echo '=== VERIFICATION: Relationships ==='
 SELECT 
     (SELECT first_name || ' ' || last_name FROM users WHERE id = r.senior_id) AS senior,
-    (SELECT first_name || ' ' || last_name FROM users WHERE id = r.caregiver_id) AS caregiver,
-    r.priority
+    (SELECT first_name || ' ' || last_name FROM users WHERE id = r.caregiver_id) AS caregiver
 FROM relationships r
-ORDER BY r.priority;
+ORDER BY r.caregiver_id;
 
 \echo ''
 \echo '=== VERIFICATION: Check-ins ==='
@@ -82,13 +81,12 @@ FROM checkins c;
 \echo '=== KEY TEST: Caregivers Notified for Check-in ==='
 SELECT 
     u.first_name || ' ' || u.last_name AS caregiver_name,
-    u.email,
-    r.priority
+    u.email
 FROM checkins c
 JOIN relationships r ON c.senior_id = r.senior_id
 JOIN users u ON r.caregiver_id = u.id
 WHERE c.id = 'dddddddd-dddd-dddd-dddd-dddddddddddd'
-ORDER BY r.priority;
+ORDER BY u.email;
 
 \echo ''
 \echo '=== TEST COMPLETE ==='

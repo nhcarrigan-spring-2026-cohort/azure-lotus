@@ -61,24 +61,22 @@ Then run SQL:
 -- See all relationships for a senior
 SELECT 
     (SELECT first_name || ' ' || last_name FROM users WHERE id = r.senior_id) AS senior,
-    (SELECT first_name || ' ' || last_name FROM users WHERE id = r.caregiver_id) AS caregiver,
-    r.priority
+    (SELECT first_name || ' ' || last_name FROM users WHERE id = r.caregiver_id) AS caregiver
 FROM relationships r
 WHERE r.senior_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')
-ORDER BY r.senior_id, r.priority;
+ORDER BY r.senior_id, r.caregiver_id;
 
 -- See which caregivers get notified for a check-in
 SELECT 
     c.id AS checkin_id,
     (SELECT first_name || ' ' || last_name FROM users WHERE id = c.senior_id) AS senior,
     u.first_name || ' ' || u.last_name AS caregiver_notified,
-    u.email AS caregiver_email,
-    r.priority
+    u.email AS caregiver_email
 FROM checkins c
 JOIN relationships r ON c.senior_id = r.senior_id
 JOIN users u ON r.caregiver_id = u.id
 WHERE c.senior_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')
-ORDER BY c.id, r.priority;
+ORDER BY c.id, u.email;
 ```
 
 ## Clean Up Test Data
@@ -99,4 +97,4 @@ Check applied migrations:
 docker compose exec database psql -U admin -d senior_checkin -c "SELECT * FROM alembic_version;"
 ```
 
-Current version should be: `f5b8e9d2a3c4` (checkin senior based)
+Current version should be: `a3f8d2e1b7c9` (drop priority from relationships)
