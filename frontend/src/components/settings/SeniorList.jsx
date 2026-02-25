@@ -1,19 +1,22 @@
+import { useQuery } from '@tanstack/react-query';
 import SeniorCard from './SeniorCard';
+import { getSeniorsByUser } from '../../api/senior.js';
 
 export default function SeniorList() {
+  const { data, status } = useQuery({
+    queryKey: 'seniors',
+    queryFn: getSeniorsByUser,
+    // refetchOnMount: 'always',
+    // refetchOnWindowFocus: 'always'
+  });
 
-    const seniors = [
-        { firstname: 'Patrick', lastname: 'Smith' },
-        { firstname: 'John', lastname: 'Doe' },
-        { firstname: 'Jane', lastname: 'Doe' },
-    ]
-    return (
-        <div>
-            {seniors.map(senior=> (
-                <SeniorCard
-                senior={senior}
-            />))
-            }
-        </div>
-    );
+  if (status === 'pending') return 'Loading...';
+
+  return (
+    <div>
+      {data.map((senior) => (
+        <SeniorCard senior={senior} />
+      ))}
+    </div>
+  );
 }

@@ -1,9 +1,10 @@
-export default function SeniorCard({senior}) {
-    console.log(senior)
-    return (
-        <div className="senior-card">
-            <h2>{`${senior.firstname} ${senior.lastname}`}</h2>
+import styles from './SeniorCard.module.css';
 
-        </div>
-    );
+export default function SeniorCard({ senior }) {
+  return (
+    <div className={styles.seniorCard}>
+      <h2>{`${senior.firstname} ${senior.lastname}`}</h2>
+      <p>Phone number: {senior.phoneNumber}</p>
+    </div>
+  );
 }
