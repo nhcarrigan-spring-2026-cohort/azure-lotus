@@ -160,3 +160,19 @@ async def create_relationship(
     session.commit()
     session.refresh(relationship)
     return relationship
+
+
+async def delete_relationship(
+    relationship_id: UUID,
+    current_user_email: str,
+    session: Session,
+) -> None:
+    """Delete a relationship. Only the senior or caregiver may do this.
+
+    Check-in history is not affected (checkins reference the senior directly).
+    """
+    relationship, _ = await _resolve_relationship_and_user(
+        relationship_id, current_user_email, session
+    )
+    session.delete(relationship)
+    session.commit()
