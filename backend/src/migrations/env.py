@@ -5,6 +5,10 @@ from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
 
 from core.setting import Settings
+from src.features.alerts.models import Alert
+from src.features.checkins.models import CheckIn
+from src.features.relationships.models import Relationship
+from src.features.users.models import User
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

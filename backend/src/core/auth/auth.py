@@ -28,7 +28,6 @@ def Register(
         email=user.email,
         phone_number=user.phone_number,
         hashed_password=hashed_password,
-        roles=user.roles,
     )
 
     db.add(new_user)
