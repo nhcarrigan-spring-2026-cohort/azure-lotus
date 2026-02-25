@@ -11,6 +11,7 @@ from src.core.database.session import engine
 from src.core.middleware.jwt_auth import JWTAuthMiddleware
 from src.core.setting import Settings
 from src.features.checkins.routers import router as check_in_router
+from src.features.relationships.routers import router as relationships_router
 from sqlalchemy import text
 from core.setting import Settings
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,6 +28,7 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(check_in_router, prefix="/check_in", tags=["checkin"])
+app.include_router(relationships_router, prefix="/relationships", tags=["relationships"])
 
 
 logging.basicConfig(
