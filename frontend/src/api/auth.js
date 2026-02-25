@@ -19,7 +19,6 @@ export const loginRequest = async ({ email, password }) => {
  * @param {string} email
  * @param {string} phoneNumber
  * @param {string} password
- * @typedef {"family" | "volunteer" | "senior"} UserRole
  * @returns {Promise<Object>}
  */
 
