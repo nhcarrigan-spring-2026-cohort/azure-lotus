@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import List, Literal
+from uuid import UUID, uuid4
 
 from pydantic import (
     BaseModel,
@@ -9,26 +9,18 @@ from pydantic import (
     ValidationInfo,
     field_validator,
 )
-from sqlalchemy import JSON, Column
 from sqlmodel import Field, SQLModel
-
-from src.shared.enums import UserRole
 
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
 
-    id: int = Field(default=None, primary_key=True)
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
     first_name: str
     last_name: str
     email: str = Field(index=True, unique=True)
     phone_number: str
     hashed_password: str
-
-    roles: List[UserRole] = Field(
-        default_factory=list,
-        sa_column=Column(JSON),
-    )
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -40,7 +32,6 @@ class user_create(SQLModel):
     email: EmailStr = Field(..., description="Unique email")
     phone_number: str
     password: str
-    roles: Literal["family", "volunteer", "senior"]
 
     model_config = ConfigDict(from_attributes=True, str_strip_whitespace=True)
 
@@ -88,7 +79,6 @@ class response(BaseModel):
     last_name: str
     email: str
     phone_number: str
-    roles: Literal["family", "volunteer", "senior"]
 
     class Config:
         from_attributes = True

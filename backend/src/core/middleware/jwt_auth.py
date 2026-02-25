@@ -67,7 +67,6 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
 
             request.state.current_user = {
                 "email": email,
-                "roles": payload.get("roles", []),
             }
 
         except ExpiredSignatureError:
