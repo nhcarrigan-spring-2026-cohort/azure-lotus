@@ -4,9 +4,13 @@ from uuid import UUID
 from fastapi import HTTPException, status
 from sqlmodel import Session, select
 
+from features.alerts.models import Alert
 from features.checkins.models import CheckIn
 from features.relationships.models import Relationship
 from features.users.models import User
+
+VALID_SUBMIT_STATUSES = {"ok", "needs_help", "no_response"}
+ALERT_STATUSES = {"needs_help", "no_response"}
 
 
 async def _resolve_relationship_and_user(
@@ -160,3 +164,55 @@ async def create_relationship(
     session.commit()
     session.refresh(relationship)
     return relationship
+
+
+async def submit_checkin(
+    relationship_id: UUID,
+    current_user_email: str,
+    checkin_status: str,
+    session: Session,
+) -> CheckIn:
+    """Submit a daily check-in for the senior in a relationship.
+
+    Rules:
+    - Requesting user must be in the relationship (403).
+    - Status must be one of: ok, needs_help, no_response (400).
+    - Only one check-in per senior per day (400).
+    - Triggers an Alert record for needs_help / no_response.
+    """
+    if checkin_status not in VALID_SUBMIT_STATUSES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid status. Must be one of: {', '.join(sorted(VALID_SUBMIT_STATUSES))}",
+        )
+
+    relationship, _ = await _resolve_relationship_and_user(
+        relationship_id, current_user_email, session
+    )
+
+    today = datetime.now(timezone.utc).date()
+    existing = session.exec(
+        select(CheckIn).where(CheckIn.senior_id == relationship.senior_id)
+    ).all()
+    for c in existing:
+        if c.created_at.date() == today:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="A check-in already exists for this senior today",
+            )
+
+    checkin = CheckIn(senior_id=relationship.senior_id, status=checkin_status)
+    session.add(checkin)
+    session.flush()
+
+    if checkin_status in ALERT_STATUSES:
+        alert = Alert(
+            checkin_id=checkin.id,
+            alert_type=checkin_status,
+            resolved=False,
+        )
+        session.add(alert)
+
+    session.commit()
+    session.refresh(checkin)
+    return checkin

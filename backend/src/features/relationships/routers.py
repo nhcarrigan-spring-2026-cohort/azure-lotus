@@ -7,13 +7,17 @@ from sqlmodel import Session
 from core.database.session import get_session
 from shared.api_response import ApiResponse
 
-from .services import create_relationship, get_checkin_history, get_missing_checkins
+from .services import create_relationship, get_checkin_history, get_missing_checkins, submit_checkin
 
 router = APIRouter()
 
 
 class CreateRelationshipRequest(BaseModel):
     email: EmailStr
+
+
+class SubmitCheckinRequest(BaseModel):
+    status: str
 
 
 @router.post(
@@ -43,6 +47,39 @@ async def add_relationship(
         success=True,
         message="Relationship created",
         data={"id": str(relationship.id), "senior_id": str(relationship.senior_id)},
+    )
+
+
+@router.post(
+    "/{relationship_id}/checkins",
+    status_code=status.HTTP_201_CREATED,
+    response_model=ApiResponse[dict],
+)
+async def relationship_submit_checkin(
+    relationship_id: UUID,
+    body: SubmitCheckinRequest,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    """Submit a daily check-in for the senior in a relationship.
+
+    - 201 on success
+    - 400 if invalid status or check-in already exists today
+    - 403 if user is not in the relationship
+    - 404 if relationship not found
+    Triggers an alert for needs_help / no_response statuses.
+    """
+    current_user_email: str = request.state.current_user["email"]
+    checkin = await submit_checkin(
+        relationship_id=relationship_id,
+        current_user_email=current_user_email,
+        checkin_status=body.status,
+        session=session,
+    )
+    return ApiResponse(
+        success=True,
+        message="Check-in submitted",
+        data={"id": str(checkin.id), "senior_id": str(checkin.senior_id), "status": checkin.status},
     )
 
 
