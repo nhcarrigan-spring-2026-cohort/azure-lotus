@@ -27,7 +27,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
-app.include_router(check_in_router, prefix="/check_in", tags=["checkin"])
+app.include_router(check_in_router, prefix="/checkins", tags=["checkin"])
 app.include_router(relationships_router, prefix="/relationships", tags=["relationships"])
 
 
