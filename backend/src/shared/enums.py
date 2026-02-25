@@ -11,6 +11,10 @@ class CheckInStatus(str, Enum):
     PENDING = "pending"
     COMPLETED = "completed"
     MISSED = "missed"
+    OK = "ok"
+    NEEDS_HELP = "needs_help"
+    NO_RESPONSE = "no_response"
+    ALERTED = "alerted"
 
 
 class CheckInMethod(str, Enum):

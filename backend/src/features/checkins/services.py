@@ -1,119 +1,109 @@
-from fastapi import HTTPException, status
+from datetime import date, datetime, timezone
+from typing import Optional
 from uuid import UUID
 
-from .models import CheckIn
+from fastapi import HTTPException
+from sqlmodel import Session, select
+
+from features.alerts.models import Alert
+from features.checkins.models import CheckIn
+from features.relationships.models import Relationship
+from features.users.models import User
+from shared.enums import CheckInStatus
 
 
-async def get_daily_checkin(senior_id: UUID, session) -> CheckIn:
-    """Get the daily check-in for a senior.
-    
-    This will notify all caregivers associated with this senior through their relationships.
-    """
-    # TODO: Verify senior exists by checking users table
-    senior = None
-    if not senior:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
-            f"Couldn't find senior {senior_id}",
-        )
-        
-    # TODO: Query checkins by senior_id for today
-    daily_checkin = None
-    return daily_checkin
-    
-async def get_missing_checkin_history(senior_id: UUID, session) -> CheckIn:
-    """Get the missing check-in history for a senior."""
-    # TODO: Verify senior exists
-    senior = None
-    if not senior:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
-            f"Couldn't find senior {senior_id}",
-        )
-
-    # TODO: Query for missed check-ins
-    missing_checkin_history = []
-    return missing_checkin_history
-
-async def get_check_in_history(senior_id: UUID, session) -> CheckIn:
-    """Get the check-in history for a senior."""
-    # TODO: Verify senior exists
-    senior = None
-    if not senior:
-        raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
-            f"Couldn't find senior {senior_id}",
-        )
-    
-    # TODO: Query all check-ins for this senior
-    checkin_history = []
-    return checkin_history
-
-
-async def trigger_alert(
-    checkin_id: UUID,
-    current_user_email: str,
-    session,
-) -> CheckIn:
-    """Set a check-in to ALERTED status and create alert records for all caregivers.
-
-    - 404 if check-in not found
-    - 403 if senior does not own the check-in
-    - 400 if already ALERTED
-    - Creates one Alert record per caregiver relationship with the senior.
-    """
-    from datetime import datetime, timezone
-
-    from sqlmodel import select
-
-    from features.alerts.models import Alert
-    from features.relationships.models import Relationship
-    from features.users.models import User
-
-    user = session.exec(select(User).where(User.email == current_user_email)).first()
+def _get_user_by_email(email: str, session: Session) -> User:
+    user = session.exec(select(User).where(User.email == email)).first()
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authenticated user not found",
+        raise HTTPException(status_code=401, detail="Authenticated user not found")
+    return user
+
+
+async def create_todays_checkin(current_user_email: str, session: Session) -> CheckIn:
+    """Create today's check-in for the logged-in senior. Returns 400 if already exists today."""
+    user = _get_user_by_email(current_user_email, session)
+    today = date.today()
+    start_of_day = datetime(today.year, today.month, today.day, tzinfo=timezone.utc)
+
+    existing = session.exec(
+        select(CheckIn).where(
+            CheckIn.senior_id == user.id,
+            CheckIn.created_at >= start_of_day,
         )
+    ).first()
+
+    if existing:
+        raise HTTPException(status_code=400, detail="Check-in already exists for today")
+
+    checkin = CheckIn(senior_id=user.id, status=CheckInStatus.PENDING)
+    session.add(checkin)
+    session.commit()
+    session.refresh(checkin)
+    return checkin
+
+
+async def get_todays_checkin(current_user_email: str, session: Session) -> Optional[CheckIn]:
+    """Get today's check-in for the logged-in senior. Returns None if not found."""
+    user = _get_user_by_email(current_user_email, session)
+    today = date.today()
+    start_of_day = datetime(today.year, today.month, today.day, tzinfo=timezone.utc)
+
+    checkin = session.exec(
+        select(CheckIn).where(
+            CheckIn.senior_id == user.id,
+            CheckIn.created_at >= start_of_day,
+        )
+    ).first()
+
+    return checkin
+
+
+async def complete_checkin(checkin_id: UUID, current_user_email: str, session: Session) -> CheckIn:
+    """Mark a check-in as complete and record the completed_at timestamp."""
+    user = _get_user_by_email(current_user_email, session)
 
     checkin = session.get(CheckIn, checkin_id)
     if not checkin:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Check-in {checkin_id} not found",
-        )
-
+        raise HTTPException(status_code=404, detail="Check-in not found")
     if checkin.senior_id != user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not own this check-in",
-        )
+        raise HTTPException(status_code=403, detail="Not authorized to complete this check-in")
 
-    if checkin.status == "alerted":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="This check-in has already been alerted",
-        )
+    checkin.status = CheckInStatus.COMPLETED
+    checkin.completed_at = datetime.now(timezone.utc)
+    session.add(checkin)
+    session.commit()
+    session.refresh(checkin)
+    return checkin
 
-    checkin.status = "alerted"
+
+async def trigger_alert(checkin_id: UUID, current_user_email: str, session: Session) -> CheckIn:
+    """Set a check-in to ALERTED and create Alert records for all caregivers.
+
+    - 404 if check-in not found
+    - 403 if the current user does not own the check-in
+    - 400 if already ALERTED
+    """
+    user = _get_user_by_email(current_user_email, session)
+
+    checkin = session.get(CheckIn, checkin_id)
+    if not checkin:
+        raise HTTPException(status_code=404, detail="Check-in not found")
+    if checkin.senior_id != user.id:
+        raise HTTPException(status_code=403, detail="You do not own this check-in")
+    if checkin.status == CheckInStatus.ALERTED:
+        raise HTTPException(status_code=400, detail="Check-in is already ALERTED")
+
+    checkin.status = CheckInStatus.ALERTED
     session.add(checkin)
     session.flush()
 
-    # Create one Alert record — notifies all caregivers via the relationship table
     relationships = session.exec(
-        select(Relationship).where(Relationship.senior_id == checkin.senior_id)
+        select(Relationship).where(Relationship.senior_id == user.id)
     ).all()
 
-    for rel in relationships:
-        alert = Alert(
-            checkin_id=checkin.id,
-            alert_type="emergency",
-            resolved=False,
-        )
-        session.add(alert)
+    for _rel in relationships:
+        session.add(Alert(checkin_id=checkin.id, alert_type="emergency", resolved=False))
 
-    # If no relationships exist, still create one alert
     if not relationships:
         session.add(Alert(checkin_id=checkin.id, alert_type="emergency", resolved=False))
 
