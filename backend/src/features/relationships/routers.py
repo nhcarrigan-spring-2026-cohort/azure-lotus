@@ -1,15 +1,49 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query, Request, status
+from pydantic import BaseModel, EmailStr
 from sqlmodel import Session
 
 from core.database.session import get_session
-from features.checkins.models import CheckIn
 from shared.api_response import ApiResponse
 
-from .services import get_checkin_history
+from .services import create_relationship, get_checkin_history, get_missing_checkins
 
 router = APIRouter()
+
+
+class CreateRelationshipRequest(BaseModel):
+    email: EmailStr
+
+
+@router.post(
+    "",
+    response_model=ApiResponse[dict],
+    status_code=status.HTTP_201_CREATED,
+)
+async def add_relationship(
+    body: CreateRelationshipRequest,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    """Create a relationship: the authenticated user becomes a caregiver for the
+    user identified by the provided email (the senior).
+
+    - 201 on success
+    - 404 if email is not found
+    - 409 if relationship already exists or self-monitoring attempted
+    """
+    current_user_email: str = request.state.current_user["email"]
+    relationship = await create_relationship(
+        current_user_email=current_user_email,
+        target_email=body.email,
+        session=session,
+    )
+    return ApiResponse(
+        success=True,
+        message="Relationship created",
+        data={"id": str(relationship.id), "senior_id": str(relationship.senior_id)},
+    )
 
 
 @router.get(
@@ -37,3 +71,28 @@ async def relationship_checkin_history(
         limit=limit,
     )
     return ApiResponse(success=True, message="Check-in history retrieved", data=data)
+
+
+@router.get(
+    "/{relationship_id}/checkins/missing",
+    response_model=ApiResponse[list],
+)
+async def relationship_missing_checkins(
+    relationship_id: UUID,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    """Get all missed check-ins for the senior in a relationship.
+
+    A check-in counts as missed if its status is 'missed', or it is still 'pending'
+    after the day it was scheduled (created_at date is before today).
+    Results are ordered newest first.
+    Only the senior or caregivers in the relationship may access this endpoint.
+    """
+    current_user_email: str = request.state.current_user["email"]
+    missed = await get_missing_checkins(
+        relationship_id=relationship_id,
+        current_user_email=current_user_email,
+        session=session,
+    )
+    return ApiResponse(success=True, message="Missed check-ins retrieved", data=missed)

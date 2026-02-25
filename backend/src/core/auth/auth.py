@@ -1,12 +1,14 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+import jwt
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response, status
 from sqlmodel import Session
 from starlette.responses import JSONResponse
 
 from core.auth import security
-from src.core.auth.security import hash_password, verify_password
+from src.core.auth.security import create_access_token, hash_password, verify_password
 from src.core.database.session import get_session
+from src.core.setting import Settings
 from src.features.users.models import User, login_request, response, user_create
 
 auth_router = APIRouter()
@@ -72,3 +74,56 @@ def login(
             "access_token": token.get("access_token"),
         }
     }
+
+
+@auth_router.post("/logout", status_code=status.HTTP_200_OK)
+def logout(response: Response):
+    """Invalidate the session by clearing the refresh token cookie."""
+    response.delete_cookie(key="refresh_token", httponly=True)
+    return {"message": "Logged out successfully"}
+
+
+@auth_router.post("/refresh", status_code=status.HTTP_200_OK)
+def refresh(
+    response: Response,
+    db: Session = Depends(get_session),
+    refresh_token: str = Cookie(default=None),
+):
+    """Issue a new access token using the refresh token stored in the cookie."""
+    if not refresh_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No refresh token provided",
+        )
+
+    if not Settings.JWT_SECRET_KEY:
+        raise HTTPException(status_code=500, detail="Server configuration error")
+
+    try:
+        payload = jwt.decode(
+            refresh_token,
+            Settings.JWT_SECRET_KEY,
+            algorithms=[Settings.ALGORITHM],
+            options={"verify_signature": True, "require": ["exp", "iat"]},
+        )
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token has expired",
+        )
+    except jwt.PyJWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token",
+        )
+
+    email = payload.get("email")
+    user_id = payload.get("user_id")
+    if not email or not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token payload malformed",
+        )
+
+    new_access_token = create_access_token({"user_id": user_id, "email": email})
+    return {"access_token": new_access_token, "token_type": "bearer"}

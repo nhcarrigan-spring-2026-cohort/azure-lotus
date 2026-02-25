@@ -13,12 +13,12 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
         excluded_paths = {
             "/auth/login",
             "/auth/register",
+            "/auth/refresh",
+            "/auth/logout",
             "/docs",
             "/redoc",
             "/openapi.json",
             "/health",
-            # "/",  we can uncomment or add as nedded
-            # "/auth/refresh",
         }
 
         if request.method == "OPTIONS" or request.url.path in excluded_paths:
