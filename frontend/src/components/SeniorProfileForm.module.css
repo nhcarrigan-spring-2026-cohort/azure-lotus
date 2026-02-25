@@ -1,0 +1,96 @@
+.container {
+  width: clamp(300px, 90%, 600px);
+  padding: 1.5rem;
+  margin: 3rem auto;
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  border-radius: 1rem;
+}
+
+.header {
+  text-align: center;
+}
+
+.personalAndMedicalSection,
+.checkInScheduleSection {
+  border: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem 0.7rem;
+  margin-bottom: 0.7rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  border-bottom: 1px solid gray;
+  width: 100%;
+  margin-bottom: 0.7rem;
+}
+
+.formContainer {
+  width: 100%;
+}
+
+.formLabel {
+  font-size: 1.25rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 0.2rem;
+}
+
+.inputField {
+  width: 100%;
+  min-height: 2rem;
+  padding: 0.3rem 0.3rem 0.3rem 1rem;
+}
+
+.inputField::placeholder {
+  font-size: 1rem;
+}
+
+.textarea {
+  width: 100%;
+}
+
+.checkInTime {
+  height: 2rem;
+  grid-area: time;
+}
+
+.selectFrequency {
+  margin-left: 0.2rem;
+}
+
+.submitBtnWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.errorTextBox.errorTextBox {
+  padding-left: 0;
+  margin-left: 0.2rem;
+  grid-area: error;
+}
+
+.multipleTimesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.timeInputRow {
+  display: grid;
+  grid-template-areas: "time remove" "error error";
+  align-items: center;
+}
+
+.removeTimeBtn {
+  grid-area: remove;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-left: 0.2rem;
+}
+
+.inputContainer {
+  display: contents;
+}

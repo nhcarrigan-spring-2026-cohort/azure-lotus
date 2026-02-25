@@ -8,6 +8,7 @@ import Signup from './pages/Signup.jsx';
 import NotFound from './pages/NotFound.jsx';
 import InviteVolunteers from './pages/InviteVolunteers.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import CreateSenior from './pages/CreateSenior.jsx';
 
 import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
 import GuestRoute from './components/auth/GuestRoute.jsx';
@@ -25,22 +26,32 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/explained" element={<Explained />} />
-          <Route path="/signup" element={
-            <GuestRoute>
-              <Signup />
-            </GuestRoute>
-          } />
-          <Route path="/login" element={
-            <GuestRoute>
-              <Login />
-            </GuestRoute>
-          } />
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
+          <Route
+            path="/signup"
+            element={
+              <GuestRoute>
+                <Signup />
+              </GuestRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <GuestRoute>
+                <Login />
+              </GuestRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/invitevolunteers" element={<InviteVolunteers />} />
+          <Route path="/seniorprofilesetup" element={<CreateSenior />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>

@@ -1,0 +1,66 @@
+.wrapper {
+  width: 100%;
+}
+
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  padding: 0.5rem;
+  font-size: 1.125rem;
+  color: darkgreen;
+  line-height: 1.5;
+  border: 2px solid lightgray;
+  border-radius: 16px;
+  background-color: whitesmoke;
+  transition: all 0.5s ease;
+  box-shadow: 0px 2px 1px 0px rgba(0, 0, 0, 0.5);
+}
+
+.textarea-small {
+  max-width: 30ch;
+}
+
+.textarea-medium {
+  max-width: 60ch;
+}
+
+.textarea-large {
+  max-width: 90ch;
+}
+
+.textarea::placeholder {
+  color: olivedrab;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: lightgreen;
+  box-shadow: 0 0 0 3px darkgreen;
+  transform: scale(1.02);
+}
+
+.errored {
+  border-color: red;
+}
+
+.errorText {
+  color: red;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+  margin-left: 0.2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
