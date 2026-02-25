@@ -121,7 +121,7 @@ export default function CreateAccount() {
         lastname: formData.lastName,
         email: formData.email,
         phoneNumber: formData.phone,
-        password: formData.password
+        password: formData.password,
       });
     }
   };

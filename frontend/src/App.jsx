@@ -25,21 +25,30 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/explained" element={<Explained />} />
-          <Route path="/signup" element={
-            <GuestRoute>
-              <Signup />
-            </GuestRoute>
-          } />
-          <Route path="/login" element={
-            <GuestRoute>
-              <Login />
-            </GuestRoute>
-          } />
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
+          <Route
+            path="/signup"
+            element={
+              <GuestRoute>
+                <Signup />
+              </GuestRoute>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <GuestRoute>
+                <Login />
+              </GuestRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/invitevolunteers" element={<InviteVolunteers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

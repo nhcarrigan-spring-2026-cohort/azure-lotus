@@ -5,7 +5,7 @@ export default function signup() {
   useTitle('Sign Up');
   return (
     <>
-      <CreateAccount/>
+      <CreateAccount />
     </>
   );
 }
