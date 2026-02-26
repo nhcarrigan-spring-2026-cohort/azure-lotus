@@ -1,12 +1,8 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from uuid import UUID, uuid4
 
 from sqlmodel import Field, SQLModel
 
-
-class CheckInBase(SQLModel):
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    status: str = Field(default="pending")
 
 class CheckInCreate(SQLModel):
     senior_id: UUID = Field(foreign_key="users.id")

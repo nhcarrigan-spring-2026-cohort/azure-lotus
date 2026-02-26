@@ -14,7 +14,8 @@ from sqlmodel import Field, SQLModel
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
-
+    __table_args__ = {"extend_existing": True}
+     
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     first_name: str
     last_name: str

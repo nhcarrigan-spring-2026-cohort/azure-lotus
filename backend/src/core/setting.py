@@ -25,9 +25,14 @@ class Settings:
 
     # Database
     DATABASE_URL: str = os.getenv("DATABASE_URL")
+    DATABASE_TEST_URL: str = os.getenv("DATABASE_TEST_URL")
 
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = os.getenv("BACKEND_CORS_ORIGINS", "").split(",")
+    
+    # EMAIL
+    NO_REPLY_EMAIL = "noreply@yourapp.com"
+    SMTP_PORT = 8025 
 
 
 settings = Settings()
