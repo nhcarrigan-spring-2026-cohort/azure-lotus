@@ -58,7 +58,9 @@ docker compose down -v && docker compose up -d
 docker compose exec app alembic -c alembic.ini upgrade head
 ```
 
-#### 6.1 Verify UUID schema
+#### 6.1 Verify Database Schema
+
+##### Quick verification of table structure:
 
 ```bash
 docker compose exec database psql -U admin -d senior_checkin -c "
@@ -68,7 +70,7 @@ WHERE table_schema = 'public'
   AND (
     (table_name = 'users' AND column_name IN ('id')) OR
     (table_name = 'relationships' AND column_name IN ('id','senior_id','caregiver_id')) OR
-    (table_name = 'checkins' AND column_name IN ('id','relationship_id')) OR
+    (table_name = 'checkins' AND column_name IN ('id','senior_id')) OR
     (table_name = 'alerts' AND column_name IN ('id','checkin_id'))
   )
 ORDER BY table_name, column_name;
@@ -94,6 +96,46 @@ docker compose exec database psql -U admin -d senior_checkin -c "SELECT COUNT(*)
 
 Expected: `users_count >= 2`, and other counts `>= 1`.
 
+
+##### Comprehensive schema test:
+
+Run the test script to verify the senior-based check-in schema:
+
+```bash
+cd backend
+./test_schema.sh
+```
+
+This will:
+1. ✓ Verify `checkins` table has `senior_id` column (not `relationship_id`)
+2. ✓ Verify foreign key: `checkins.senior_id` → `users.id`
+3. ✓ Create test data: 1 senior with 3 caregivers
+4. ✓ Create 1 check-in for the senior
+5. ✓ Demonstrate that ONE check-in notifies ALL caregivers
+
+**Expected output:**
+```
+=== KEY TEST: Caregivers Notified ===
+For Senior Smith's check-in, these caregivers are notified:
+ Caregiver One   | caregiver.one@test.com
+ Caregiver Three | caregiver.three@test.com
+ Caregiver Two   | caregiver.two@test.com
+
+✓ Test Complete!
+Result: ONE check-in notifies ALL 3 caregivers!
+```
+
+##### Manual verification of checkins table:
+
+```bash
+docker compose exec database psql -U admin -d senior_checkin -c "\d checkins"
+```
+
+Expected columns:
+- `id` (uuid, primary key)
+- `senior_id` (uuid, foreign key to users.id)
+- `status` (character varying)
+- `created_at` (timestamp)
 
 [More About Migration](
     https://medium.com/@johnidouglasmarangon/using-migrations-in-python-sqlalchemy-with-alembic-docker-solution-bd79b219d6a)

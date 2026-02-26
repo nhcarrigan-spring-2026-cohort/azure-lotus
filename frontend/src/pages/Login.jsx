@@ -15,7 +15,7 @@ export default function Login() {
   const { loginSuccess } = useAuthContext();
 
   const navigate = useNavigate();
-  const location = useLocation()
+  const location = useLocation();
   const fromLocation = location.state?.from?.pathname || '/';
 
   const login = useMutation({
@@ -23,7 +23,7 @@ export default function Login() {
     onSuccess: (user) => {
       console.log(`Login successful, ${JSON.stringify(user)}`);
       loginSuccess(user);
-      navigate(fromLocation, {replace: true});
+      navigate(fromLocation, { replace: true });
     },
     onError: (error) => {
       console.error(`Login failed: ${error.data.detail}`);
