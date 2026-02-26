@@ -1,5 +1,6 @@
 import useTitle from '../components/hooks/useTitle';
 import Card from '../components/ui/Card';
+import CheckIn from '../components/checkin/CheckIn';
 import './Home.css';
 import { useAuthContext } from '../context/AuthContext.jsx';
 
@@ -11,7 +12,9 @@ export default function Home() {
     <>
       <h1>Home</h1>
       {isAuthenticated ? (
-        <p>Welcome, {user?.email}!</p>
+          <>
+            <CheckIn />
+          </>
       ) : (
         <a href="/login">Login</a>
       )}
