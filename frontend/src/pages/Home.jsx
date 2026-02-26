@@ -12,9 +12,9 @@ export default function Home() {
     <>
       <h1>Home</h1>
       {isAuthenticated ? (
-          <>
-            <CheckIn />
-          </>
+        <>
+          <CheckIn />
+        </>
       ) : (
         <a href="/login">Login</a>
       )}
