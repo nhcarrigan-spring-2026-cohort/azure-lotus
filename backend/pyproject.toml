@@ -31,6 +31,7 @@ dependencies = [
 dev = [
   "pytest>=8.0.0",
   "pytest-asyncio>=0.23.5",
+  "pytest-cov>=4.1.0",
   "httpx>=0.26.0",
   "ruff>=0.3.0",
   "black>=24.2.0",
@@ -55,7 +56,8 @@ build-backend = "setuptools.build_meta"
 
 [tool.black]
 exclude = '''
-  src/migrations
+  src/migrations |
+  \.venv
 '''
 
 [tool.isort]
