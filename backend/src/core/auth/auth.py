@@ -73,15 +73,13 @@ def login(
             "phone_number": existing_user.phone_number,
             "first_name": existing_user.first_name,
             "access_token": token.get("access_token"),
+            }
         }
-
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"detail": str(e)})
-
 
 
 @auth_router.post('/refresh') 
-async def refresh_token_route(res: Response, refresh_token: Optional[str] = Cookie(None))-> Any:
+async def refresh_token_route(res: Response, db: Session = Depends(get_session),
+ refresh_token: Optional[str] = Cookie(None))-> Any:
     #Get the refresh token from cookie 
     if not refresh_token:
         return JSONResponse(
@@ -102,6 +100,14 @@ async def refresh_token_route(res: Response, refresh_token: Optional[str] = Cook
         new_access_token = security.create_access_token(payload)
 
        
+        user = db.query(User).filter(User.email == payload.get("email")).first()
+
+        if not user:
+          return JSONResponse(
+            status_code=401,
+            content={"detail": "User not found"}
+            )
+
         # update refresh token 
         res.set_cookie(
             key="refresh_token",
@@ -110,8 +116,15 @@ async def refresh_token_route(res: Response, refresh_token: Optional[str] = Cook
             secure=False,
             )
 
-        return {"access_token": new_access_token}
-        
+        return {
+            "user_info": {
+                "id":user.id,
+                "email": user.email ,
+                "phone_number": user.phone_number,
+                "first_name": user.first_name,
+                    },
+          "access_token":new_access_token ,
+        }
 
     except jwt.ExpiredSignatureError:
         return JSONResponse(status_code=401, content={"detail": "Refresh token expired. Please log in again."})
@@ -120,4 +133,3 @@ async def refresh_token_route(res: Response, refresh_token: Optional[str] = Cook
     except Exception as e: 
         return JSONResponse(status_code=500, content={"detail": e})
 
-    }
