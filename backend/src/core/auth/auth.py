@@ -1,6 +1,8 @@
-from typing import Any
+from typing import Optional, Any
+import jwt
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from core.setting import Settings
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Cookie
 from sqlmodel import Session
 from starlette.responses import JSONResponse
 
@@ -10,7 +12,6 @@ from src.core.database.session import get_session
 from src.features.users.models import User, login_request, response, user_create
 
 auth_router = APIRouter()
-
 
 @auth_router.post("/register", response_model=response)
 def Register(
@@ -80,3 +81,46 @@ def login(
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"detail": str(e)})
+
+
+
+@auth_router.post('/refresh') 
+async def refresh_token_route(res: Response, refresh_token: Optional[str] = Cookie(None))-> Any:
+    #Get the refresh token from cookie 
+    if not refresh_token:
+        return JSONResponse(
+            status_code=401, 
+            content={"detail": "Refresh token cookie missing."}
+        )    
+
+    try:
+
+        #  Decode the refresh token 
+        jwt_decoded = jwt.decode(refresh_token, Settings.JWT_SECRET_KEY, algorithms=[Settings.ALGORITHM])
+        payload = { 
+                   "email":jwt_decoded.get('email'),
+                   "user_id": jwt_decoded.get("user_id")
+                   }
+
+        new_refresh_token = security.create_refresh_token(payload)
+        new_access_token = security.create_access_token(payload)
+
+       
+        # update refresh token 
+        res.set_cookie(
+            key="refresh_token",
+            value=new_refresh_token,
+            httponly=True,
+            secure=False,
+            )
+
+        return {"access_token": new_access_token}
+        
+
+    except jwt.ExpiredSignatureError:
+        return JSONResponse(status_code=401, content={"detail": "Refresh token expired. Please log in again."})
+    except jwt.InvalidTokenError:
+        return JSONResponse(status_code=401, content={"detail": "Invalid refresh token"})
+    except Exception as e: 
+        return JSONResponse(status_code=500, content={"detail": e})
+
