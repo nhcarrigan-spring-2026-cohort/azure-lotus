@@ -80,11 +80,12 @@ def login(
 @auth_router.post('/refresh') 
 async def refresh_token_route(res: Response, db: Session = Depends(get_session),
  refresh_token: Optional[str] = Cookie(None))-> Any:
+
     #Get the refresh token from cookie 
     if not refresh_token:
         return JSONResponse(
             status_code=401, 
-            content={"detail": "Refresh token cookie missing."}
+            content={"detail": "Refresh token cookie missing...."}
         )    
 
     try:
