@@ -30,9 +30,11 @@ class Settings:
     # CORS
     BACKEND_CORS_ORIGINS: list[str] = os.getenv("BACKEND_CORS_ORIGINS", "").split(",")
     
-    # EMAIL
-    NO_REPLY_EMAIL = "noreply@yourapp.com"
-    SMTP_PORT = 8025 
+    # EMAIL / SMTP (MailHog)
+    NO_REPLY_EMAIL: str = os.getenv("NO_REPLY_EMAIL", "noreply@azure-lotus.local")
+    SMTP_HOST: str = os.getenv("SMTP_HOST", "mailhog")
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", "1025"))
+    SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "noreply@azure-lotus.local") 
 
 
 settings = Settings()

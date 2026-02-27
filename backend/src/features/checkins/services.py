@@ -111,8 +111,11 @@ async def get_check_in_history(senior_id: UUID, payload, session) -> list:
 def create_daily_checkins_service(session):
     """Create daily check-in records for all seniors."""
  
-    result = session.execute(select(Relationship))
-    seniors = set([row.senior_id for row in result.scalars().all()])
+    seniors = session.exec(
+                select(User).join(
+                    Relationship, User.id == Relationship.senior_id
+                )
+            ).all()
     
     for senior in seniors:
         logger.info(f"Creating daily check-in for senior {senior}")
@@ -125,30 +128,34 @@ def create_daily_checkins_service(session):
         )
     try:
         session.commit()
-    except:
+    except Exception as e:
+        logger.error(f"Error committing session in create_daily_checkins_service: {e}")
         session.rollback()
 
 
-async def mark_missing_and_notify():
+def mark_missing_and_notify(session):
     """Mark pending check-ins as missed and notify seniors."""
-    today = datetime.now(timezone.utc).date()
-
-    async with get_session() as session:
-        result = await session.execute(
-            select(CheckIn)
-            .where(CheckIn.created_at >= datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0))\
-            .where(CheckIn.created_at < datetime.now(timezone.utc).replace(hour=23, minute=59, second=59, microsecond=999999))\
-            .where(CheckIn.status == CheckInStatus.PENDING)
-        )
-
-        pending_checkins = result.scalars().all()
-
-        for checkin in pending_checkins:
-            # Send Email
-            await send_email_to_missing_checkin(checkin.senior_id)
-
-            # Update status
-            checkin.status = CheckInStatus.MISSED
-
-        await session.commit()
-
+    result = session.execute(
+        select(CheckIn)
+        .where(CheckIn.created_at >= datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0))\
+        .where(CheckIn.created_at < datetime.now(timezone.utc).replace(hour=23, minute=59, second=59, microsecond=999999))\
+        .where(CheckIn.status == CheckInStatus.PENDING)
+    )
+    pending_checkins = result.scalars().all()
+    for checkin in pending_checkins:
+        # Send Email
+        caregiver = session.exec(
+            select(User).join(
+                Relationship, User.id == Relationship.caregiver_id
+            ).where(Relationship.senior_id == checkin.senior_id)
+        ).all()
+        
+        for caregiver in caregiver:
+            send_email_to_missing_checkin(caregiver.email)
+        # Update status
+        checkin.status = CheckInStatus.MISSED
+    try:
+        session.commit()
+    except Exception as e:
+        logger.error(f"Error committing session in mark_missing_and_notify: {e}")
+        session.rollback()

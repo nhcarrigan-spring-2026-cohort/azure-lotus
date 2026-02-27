@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from shared.email_service import send_email_to_missing_checkin
 from shared.filter_commands import CheckinFilterCommand, validate_checkin_filter_command
 from sqlmodel import Session
+from datetime import date
 from uuid import UUID
 
 from core.database.session import get_session
@@ -17,8 +18,8 @@ router = APIRouter()
 def get_checkin_filter(
     offset: int = 0,
     limit: int = 10,
-    from_date: str = None,
-    to_date: str = None,
+    from_date: date = None,
+    to_date: date = None,
 ) -> CheckinFilterCommand:
     """Dependency to create CheckinFilterCommand from query parameters."""
     return CheckinFilterCommand(offset=offset, limit=limit, from_date=from_date, to_date=to_date)
