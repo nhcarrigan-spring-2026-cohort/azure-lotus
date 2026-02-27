@@ -13,12 +13,13 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
         excluded_paths = {
             "/auth/login",
             "/auth/register",
-            "/auth/refresh",
             "/auth/logout",
+            "/auth/refresh",
             "/docs",
             "/redoc",
             "/openapi.json",
             "/health",
+            "/email-test",
         }
 
         if request.method == "OPTIONS" or request.url.path in excluded_paths:
