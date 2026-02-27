@@ -1,17 +1,18 @@
-from typing import Any
-
+from typing import Optional, Any
 import jwt
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Request, Response, status
+
+from core.setting import Settings
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Cookie
 from sqlmodel import Session
 from starlette.responses import JSONResponse
 
 from core.auth import security
-from src.core.auth.security import create_access_token, hash_password, verify_password
+from src.core.auth.security import hash_password, verify_password
 from src.core.database.session import get_session
-from src.core.setting import Settings
 from src.features.users.models import User, login_request, response, user_create
 
 auth_router = APIRouter()
+
 
 
 @auth_router.post("/register", response_model=response, status_code=201)
@@ -72,8 +73,8 @@ def login(
             "phone_number": existing_user.phone_number,
             "first_name": existing_user.first_name,
             "access_token": token.get("access_token"),
+            }
         }
-    }
 
 
 @auth_router.post("/logout", status_code=status.HTTP_200_OK)
@@ -83,47 +84,60 @@ def logout(response: Response):
     return {"message": "Logged out successfully"}
 
 
-@auth_router.post("/refresh", status_code=status.HTTP_200_OK)
-def refresh(
-    response: Response,
-    db: Session = Depends(get_session),
-    refresh_token: str = Cookie(default=None),
-):
-    """Issue a new access token using the refresh token stored in the cookie."""
-    if not refresh_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="No refresh token provided",
-        )
+@auth_router.post('/refresh') 
+async def refresh_token_route(res: Response, db: Session = Depends(get_session),
+ refresh_token: Optional[str] = Cookie(None))-> Any:
 
-    if not Settings.JWT_SECRET_KEY:
-        raise HTTPException(status_code=500, detail="Server configuration error")
+    #Get the refresh token from cookie 
+    if not refresh_token:
+        return JSONResponse(
+            status_code=401, 
+            content={"detail": "Refresh token cookie missing...."}
+        )    
 
     try:
-        payload = jwt.decode(
-            refresh_token,
-            Settings.JWT_SECRET_KEY,
-            algorithms=[Settings.ALGORITHM],
-            options={"verify_signature": True, "require": ["exp", "iat"]},
-        )
+
+        #  Decode the refresh token 
+        jwt_decoded = jwt.decode(refresh_token, Settings.JWT_SECRET_KEY, algorithms=[Settings.ALGORITHM])
+        payload = { 
+                   "email":jwt_decoded.get('email'),
+                   "user_id": jwt_decoded.get("user_id")
+                   }
+
+        new_refresh_token = security.create_refresh_token(payload)
+        new_access_token = security.create_access_token(payload)
+
+       
+        user = db.query(User).filter(User.email == payload.get("email")).first()
+
+        if not user:
+          return JSONResponse(
+            status_code=401,
+            content={"detail": "User not found"}
+            )
+
+        # update refresh token 
+        res.set_cookie(
+            key="refresh_token",
+            value=new_refresh_token,
+            httponly=True,
+            secure=False,
+            )
+
+        return {
+            "user_info": {
+                "id":user.id,
+                "email": user.email ,
+                "phone_number": user.phone_number,
+                "first_name": user.first_name,
+                    },
+          "access_token":new_access_token ,
+        }
+
     except jwt.ExpiredSignatureError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Refresh token has expired",
-        )
-    except jwt.PyJWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token",
-        )
+        return JSONResponse(status_code=401, content={"detail": "Refresh token expired. Please log in again."})
+    except jwt.InvalidTokenError:
+        return JSONResponse(status_code=401, content={"detail": "Invalid refresh token"})
+    except Exception as e: 
+        return JSONResponse(status_code=500, content={"detail": e})
 
-    email = payload.get("email")
-    user_id = payload.get("user_id")
-    if not email or not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token payload malformed",
-        )
-
-    new_access_token = create_access_token({"user_id": user_id, "email": email})
-    return {"access_token": new_access_token, "token_type": "bearer"}

@@ -1,4 +1,4 @@
-import styles from './FamilyRegistrationForm.module.css';
+import styles from './CreateAccount.module.css';
 import Input from './ui/Input';
 import Button from './ui/Button';
 import { IoMdEye, IoMdEyeOff } from 'react-icons/io';
@@ -8,7 +8,7 @@ import { useMutation } from '@tanstack/react-query';
 import { registerRequest } from '../api/auth.js';
 import { useNavigate } from 'react-router';
 
-export default function FamilyRegistrationForm() {
+export default function CreateAccount() {
   const navigate = useNavigate();
 
   const register = useMutation({
@@ -122,16 +122,15 @@ export default function FamilyRegistrationForm() {
         email: formData.email,
         phoneNumber: formData.phone,
         password: formData.password,
-        role: 'family',
       });
     }
   };
 
   return (
     <div className={styles.formContainer}>
-      <h1 className={styles.title}>Create Family Account</h1>
+      <h1 className={styles.title}>Create Your Account</h1>
       <p className={styles.subtitle}>
-        Sign up to manage your senior care account.
+        Sign up to start connecting and monitoring wellness check-ins
       </p>
       <form onSubmit={handleSubmit}>
         <div className={styles.formGroup}>
