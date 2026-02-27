@@ -2,8 +2,9 @@ import logging
 import smtplib
 from email.message import EmailMessage
 
-from core.setting import Settings
 from sqlmodel import SQLModel
+
+from core.setting import Settings
 
 
 class Email(SQLModel, table=False):

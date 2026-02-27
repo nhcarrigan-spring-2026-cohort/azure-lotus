@@ -1,10 +1,12 @@
-from core.setting import Settings
 from fastapi import APIRouter
-from shared.email_service import send_email_to_missing_checkin
 from sqlalchemy import text
+
+from core.setting import Settings
+from shared.email_service import send_email_to_missing_checkin
 from src.core.database.session import engine
 
 router = APIRouter()
+
 
 @router.get("/")
 async def root():
@@ -28,5 +30,5 @@ def health():
 @router.get("/email-test")
 def email_test():
     send_email_to_missing_checkin("test-senior-id")
-    
+
     return {"status": "ok", "message": "Email sent (if email service is configured)"}

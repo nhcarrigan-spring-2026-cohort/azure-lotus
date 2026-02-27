@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, date
+from datetime import date, datetime, timezone
 from uuid import UUID, uuid4
 
 from sqlmodel import Field, SQLModel
@@ -7,6 +7,7 @@ from sqlmodel import Field, SQLModel
 class CheckInCreate(SQLModel):
     senior_id: UUID = Field(foreign_key="users.id")
     status: str = Field(default="pending")
+
 
 class CheckIn(SQLModel, table=True):
     __tablename__ = "checkins"

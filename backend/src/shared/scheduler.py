@@ -1,14 +1,19 @@
 import logging
+from datetime import date
+
 from apscheduler.schedulers.background import BackgroundScheduler
-from features.checkins.services import create_daily_checkins_service, mark_missing_and_notify
+from sqlmodel import Session, select
+
 from core.database.session import engine
 from core.setting import Settings
-from shared.email_service import send_email_to_missing_checkin
-from sqlmodel import Session, select
 from features.checkins.models import CheckIn
-from features.users.models import User
+from features.checkins.services import (
+    create_daily_checkins_service,
+    mark_missing_and_notify,
+)
 from features.relationships.models import Relationship
-from datetime import date
+from features.users.models import User
+from shared.email_service import send_email_to_missing_checkin
 
 logger = logging.getLogger(__name__)
 scheduler = BackgroundScheduler()
@@ -43,7 +48,7 @@ def start_scheduler():
         minute=0,
         id="create_daily_checkins",
     )
-    
+
     # Send reminder emails at 10 PM for missing check-ins
     scheduler.add_job(
         scheduled_send_missing_checkin_reminders,
@@ -53,6 +58,6 @@ def start_scheduler():
         # second="*/30",  # For testing, run every 30 seconds
         id="send_missing_checkin_reminders",
     )
-    
+
     scheduler.start()
     logger.info("Scheduler started with check-in and email reminder jobs")
