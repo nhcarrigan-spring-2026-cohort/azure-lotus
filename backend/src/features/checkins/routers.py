@@ -37,11 +37,8 @@ def get_checkin_filter(
 async def senior_daily_checkin(
     senior_id: UUID,
     session: Session = Depends(get_session),
-    payload: CheckinFilterCommand = Depends(get_checkin_filter),
 ):
     """Get the daily check-in of a senior."""
-    if not validate_checkin_filter_command(payload):
-        raise HTTPException(status_code=400, detail="Invalid filter command")
 
     daily_checkin = await get_daily_checkin(senior_id, session)
     return ApiResponse(success=True, message="", data=daily_checkin)
