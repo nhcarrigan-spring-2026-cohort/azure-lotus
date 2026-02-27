@@ -17,8 +17,7 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
             "/redoc",
             "/openapi.json",
             "/health",
-            # "/",  we can uncomment or add as nedded
-            # "/auth/refresh",
+            "/auth/refresh",
         }
 
         if request.method == "OPTIONS" or request.url.path in excluded_paths:
