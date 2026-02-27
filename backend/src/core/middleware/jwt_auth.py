@@ -17,6 +17,9 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
             "/redoc",
             "/openapi.json",
             "/health",
+            "/email-test",
+            # "/",  we can uncomment or add as nedded
+            # "/auth/refresh",
             "/auth/refresh",
         }
 
