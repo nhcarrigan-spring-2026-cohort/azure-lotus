@@ -13,7 +13,7 @@ from src.core.middleware.jwt_auth import JWTAuthMiddleware
 from src.core.setting import Settings
 from src.features.checkins.routers import router as check_in_router
 from src.features.home.routers import router as home_router
-
+from src.features.alerts.alerts import alert_router
 app = FastAPI(title=Settings.APP_NAME, version=Settings.VERSION)
 
 app.add_middleware(JWTAuthMiddleware)
@@ -36,7 +36,7 @@ app.openapi = custom_openapi(app)
 app.include_router(home_router, tags=["home", "health-check"])
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(check_in_router, prefix="/check_in", tags=["checkin"])
-
+app.include_router(alert_router, tags=["home", "health-check"])
 
 app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 app.add_exception_handler(HTTPException, http_exception_handler)
