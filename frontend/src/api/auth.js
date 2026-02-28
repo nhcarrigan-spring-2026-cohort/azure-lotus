@@ -19,7 +19,6 @@ export const loginRequest = async ({ email, password }) => {
  * @param {string} email
  * @param {string} phoneNumber
  * @param {string} password
- * @typedef {"family" | "volunteer" | "senior"} UserRole
  * @returns {Promise<Object>}
  */
 
@@ -29,7 +28,6 @@ export const registerRequest = async ({
   email,
   phoneNumber,
   password,
-  role,
 }) => {
   try {
     const { data } = await api.post('/auth/register', {
@@ -38,7 +36,6 @@ export const registerRequest = async ({
       email,
       phone_number: phoneNumber,
       password,
-      roles: role,
     });
     return data;
   } catch (e) {
