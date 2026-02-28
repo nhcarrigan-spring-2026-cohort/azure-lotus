@@ -79,6 +79,24 @@ ORDER BY table_name, column_name;
 
 Expected: all listed IDs should show `data_type = uuid`.
 
+#### 6.2 Seed baseline data
+
+```bash
+docker compose exec -e PYTHONPATH=/app app python src/scripts/seed.py
+```
+
+#### 6.3 Verify seeded data
+
+```bash
+docker compose exec database psql -U admin -d senior_checkin -c "SELECT COUNT(*) AS users_count FROM users;"
+docker compose exec database psql -U admin -d senior_checkin -c "SELECT COUNT(*) AS relationships_count FROM relationships;"
+docker compose exec database psql -U admin -d senior_checkin -c "SELECT COUNT(*) AS checkins_count FROM checkins;"
+docker compose exec database psql -U admin -d senior_checkin -c "SELECT COUNT(*) AS alerts_count FROM alerts;"
+```
+
+Expected: `users_count >= 2`, and other counts `>= 1`.
+
+
 ##### Comprehensive schema test:
 
 Run the test script to verify the senior-based check-in schema:
