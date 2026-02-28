@@ -1,44 +1,54 @@
 import Card from '../components/ui/Card';
 import './DashboardCards.css'
-
-const mockData = {
-    0: [
-        {name: "Jaafar", status: "waiting", time: "9:00"},
-        {name: "aeki", status: "waiting", time: "8:00"},
-        {name: "Notcori", status: "missed", time: "7:30"},
-        {name: "Leo", status: "checked in", time: "7:00"}
-    ]
-    ,
-    1 : [
-        {name: "Jaafar", status: "checked in", time: "9:00"},
-        {name: "aeki", status: "missed", time: "8:00"},
-        {name: "Notcori", status: "checked in", time: "7:30"},
-        {name: "Leo", status: "missed", time: "7:00"}
-    ],
-    
-    2 : [
-        {name: "Jaafar", status: "missed", time: "9:00"},
-        {name: "aeki", status: "missed", time: "8:00"},
-        {name: "Notcori", status: "missed", time: "7:30"},
-        {name: "Leo", status: "missed", time: "7:00"}
-    ]
-}
+import React, { useEffect, useState } from 'react';
+import { getSeniorsByUser } from '../api/senior.js';
+import { useAuthContext } from '../context/AuthContext';
 
 export default function DashboardCards({date}) {
+    const { user, accessToken } = useAuthContext();
+    const caregiverId = user.id;
+
+    const [seniorsData, setSeniorsData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const whichDay = date;
+    
+    useEffect(() => {
+        if (!user?.id || !accessToken) return;
+        const getData = async () => {
+            setLoading(true);
+            try {
+                const result = await getSeniorsByUser(caregiverId, whichDay);
+                if (result.success) {
+                    setSeniorsData(result.data)
+                    console.log("Fresh data from API:", result.data);
+                }
+            } catch (error) {
+                throw error.response?.data || error.message || error;
+            } finally {
+                setLoading(false);
+            }
+        };
+        getData();
+    },[whichDay, caregiverId, accessToken]);
+
+    if (loading) return <p>Loading...</p>;
+
+    if (!seniorsData || seniorsData.length === 0) {
+        return (
+            <div className="cards-board">
+                <Card key="zero card" first_name="No" last_name="Seniors Found" />
+            </div>
+        );
+    }
 
 
-
-    if((!date  && date!==0)|| date >= Object.keys(mockData).length ) return(
+    return (
         <div className="cards-board">
-                <Card key="zero card"/>
-        </div>
-    );
-
-
-    return(
-        <div className="cards-board">
-            {mockData[date].map( card => (
-                <Card key={`${card.name}-${card.time}-${card.date}`} {...card}/>
+            {seniorsData.map((senior, index) => (
+                <Card 
+                    key={senior.id || index} 
+                    {...senior}
+                />
             ))}
         </div>
     );
