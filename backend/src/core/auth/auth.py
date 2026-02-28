@@ -77,6 +77,13 @@ def login(
         }
 
 
+@auth_router.post("/logout", status_code=status.HTTP_200_OK)
+def logout(response: Response):
+    """Invalidate the session by clearing the refresh token cookie."""
+    response.delete_cookie(key="refresh_token", httponly=True)
+    return {"message": "Logged out successfully"}
+
+
 @auth_router.post('/refresh') 
 async def refresh_token_route(res: Response, db: Session = Depends(get_session),
  refresh_token: Optional[str] = Cookie(None))-> Any:
