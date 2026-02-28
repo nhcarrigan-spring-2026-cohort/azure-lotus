@@ -13,6 +13,7 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
         excluded_paths = {
             "/auth/login",
             "/auth/register",
+            "/auth/logout",
             "/docs",
             "/redoc",
             "/openapi.json",

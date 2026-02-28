@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request, logger
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -13,6 +13,7 @@ from src.core.middleware.jwt_auth import JWTAuthMiddleware
 from src.core.setting import Settings
 from src.features.checkins.routers import router as check_in_router
 from src.features.home.routers import router as home_router
+from src.features.relationships.routers import router as relationships_router
 
 app = FastAPI(title=Settings.APP_NAME, version=Settings.VERSION)
 
@@ -36,6 +37,7 @@ app.openapi = custom_openapi(app)
 app.include_router(home_router, tags=["home", "health-check"])
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(check_in_router, prefix="/check_in", tags=["checkin"])
+app.include_router(relationships_router, prefix="/relationships", tags=["relationships"])
 
 
 app.add_exception_handler(StarletteHTTPException, http_exception_handler)

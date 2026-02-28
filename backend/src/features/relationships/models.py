@@ -6,6 +6,7 @@ from sqlmodel import Field, SQLModel
 
 class Relationship(SQLModel, table=True):
     __tablename__ = "relationships"
+    __table_args__ = {"extend_existing": True}
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     senior_id: UUID = Field(foreign_key="users.id")
