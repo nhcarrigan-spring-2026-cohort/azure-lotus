@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "biome lint --write",
     "format": "biome format --write",
+    "format:staged": "biome format --write --staged",
     "preview": "vite preview",
     "test": "playwright test",
     "test:ui": "playwright test --ui"
