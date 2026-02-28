@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from 'react';
+import { setAxiosAccessToken } from '../lib/axios.js';
 
 const AuthContext = createContext(null);
 
@@ -10,6 +11,7 @@ export function AuthProvider({ children }) {
   const loginSuccess = (payload) => {
     setIsAuthenticated(true);
     setAccessToken(payload.access_token);
+    setAxiosAccessToken(payload.access_token);
     setUser(payload.user_info);
   };
 
@@ -17,6 +19,7 @@ export function AuthProvider({ children }) {
     // TODO: use backend logout endpoint
     setIsAuthenticated(false);
     setAccessToken(null);
+    setAxiosAccessToken(null);
     setUser(null);
   };
 

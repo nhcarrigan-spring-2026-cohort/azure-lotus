@@ -5,6 +5,7 @@ export default function Button({
   variant = 'primary',
   size = 'medium',
   className = '',
+  onClick,
   ...props
 }) {
   const buttonClass = [
@@ -16,8 +17,7 @@ export default function Button({
   ].join(' ');
 
   return (
-    
-    <button className={buttonClass} {...props}>
+    <button className={buttonClass} onClick={onClick} {...props}>
       {children}
     </button>
   );

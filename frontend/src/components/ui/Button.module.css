@@ -124,7 +124,7 @@
   padding: 24px 32px;
   border-radius: 20px;
   font-size: 1.5rem;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 .btn-disabled {
