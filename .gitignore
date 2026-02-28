@@ -34,3 +34,8 @@ uv.lock
 venv/
 env/
 .env
+backend/src/features/checkins/models.py
+backend/src/features/checkins/routers.py
+backend/src/features/checkins/services.py
+backend/src/migrations/versions/967c0e0ebf92_add_senior_time_to_checkins.py
+backend/src/shared/api_response.py
