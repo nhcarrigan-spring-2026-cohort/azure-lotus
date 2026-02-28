@@ -1,4 +1,5 @@
-from datetime import datetime, timezone
+from datetime import datetime, time, timezone
+from typing import Optional
 from uuid import UUID
 
 from fastapi import HTTPException, status
@@ -171,6 +172,7 @@ async def submit_checkin(
     current_user_email: str,
     checkin_status: str,
     session: Session,
+    checkin_time: Optional[time] = None,
 ) -> CheckIn:
     """Submit a daily check-in for the senior in a relationship.
 
@@ -201,7 +203,11 @@ async def submit_checkin(
                 detail="A check-in already exists for this senior today",
             )
 
-    checkin = CheckIn(senior_id=relationship.senior_id, status=checkin_status)
+    checkin = CheckIn(
+        senior_id=relationship.senior_id,
+        status=checkin_status,
+        checkin_time=checkin_time,
+    )
     session.add(checkin)
     session.flush()
 

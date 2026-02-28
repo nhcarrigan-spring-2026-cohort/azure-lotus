@@ -1,3 +1,5 @@
+from datetime import time
+from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request, status
@@ -18,6 +20,7 @@ class CreateRelationshipRequest(BaseModel):
 
 class SubmitCheckinRequest(BaseModel):
     status: str
+    checkin_time: Optional[time] = None
 
 
 @router.post(
@@ -74,6 +77,7 @@ async def relationship_submit_checkin(
         relationship_id=relationship_id,
         current_user_email=current_user_email,
         checkin_status=body.status,
+        checkin_time=body.checkin_time,
         session=session,
     )
     return ApiResponse(
