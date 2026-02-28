@@ -14,6 +14,7 @@ from src.core.setting import Settings
 from src.features.checkins.routers import router as check_in_router
 from src.features.home.routers import router as home_router
 from src.features.relationships.routers import router as relationships_router
+from src.features.alerts.routers import router as alerts_router
 
 app = FastAPI(title=Settings.APP_NAME, version=Settings.VERSION)
 
@@ -38,7 +39,7 @@ app.include_router(home_router, tags=["home", "health-check"])
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(check_in_router, prefix="/check_in", tags=["checkin"])
 app.include_router(relationships_router, prefix="/relationships", tags=["relationships"])
-
+app.include_router(alerts_router, prefix="/alers", tags=["alerts"])
 
 app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 app.add_exception_handler(HTTPException, http_exception_handler)

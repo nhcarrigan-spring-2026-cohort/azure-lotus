@@ -11,11 +11,12 @@ from core.database.session import get_session
 
 from .models import Alert
 
+
 router=APIRouter()
 
-@router.patch('/alerts/{alert_id}/resolve')
-def resolve_alert(alert_id: UUID, response=Response, db: Session=Depends(get_session)):
+@router.get('/{alert_id}/resolve')
+async def resolve_alert(alert_id: UUID, response=Response, db: Session=Depends(get_session)):
     alert=db.query(Alert).filter(Alert.id == alert_id).first()
-    print(f'Alert obj: {alert}')
+#    print(f'Alert obj: {alert}')
     print(f'Resolved status: {alert.resolved}')
-    return
+    return alert
