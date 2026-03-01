@@ -9,7 +9,7 @@ from sqlmodel import Session
 from core.database.session import get_session
 from shared.api_response import ApiResponse
 
-from .services import create_relationship, get_checkin_history, get_missing_checkins, get_monitoring, get_monitors, submit_checkin
+from .services import create_relationship, delete_relationship, get_checkin_history, get_missing_checkins, get_monitoring, get_monitors, submit_checkin
 
 router = APIRouter()
 
@@ -85,6 +85,23 @@ async def relationship_submit_checkin(
         message="Check-in submitted",
         data={"id": str(checkin.id), "senior_id": str(checkin.senior_id), "status": checkin.status},
     )
+
+@router.delete("/{relationship_id}", status_code=status.HTTP_200_OK)
+async def remove_relationship(
+    relationship_id: UUID,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    """Delete a relationship. Only the senior or caregiver in the relationship may do this.
+    Check-in history is preserved.
+    """
+    current_user_email: str = request.state.current_user["email"]
+    await delete_relationship(
+        relationship_id=relationship_id,
+        current_user_email=current_user_email,
+        session=session,
+    )
+    return ApiResponse(success=True, message="Relationship deleted", data=None)
 
 
 @router.get("/monitoring", response_model=ApiResponse[list])
