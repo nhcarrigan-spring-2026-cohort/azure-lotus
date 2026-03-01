@@ -9,12 +9,12 @@
 
 .formContainer {
   width: clamp(300px, 80%, 600px);
-  margin: 3rem auto;
-  padding: 3rem;
+  /* margin: 3rem auto; */
+  /* padding: 3rem; */
   font-size: 1.25rem;
   background-color: white;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-  border-radius: 1rem;
+  /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  border-radius: 1rem; */
 }
 
 .formGroup {
@@ -22,6 +22,7 @@
 }
 
 .formLabel {
+  color: #7e8082FF;
   font-weight: bold;
   margin-left: 0.2rem;
   cursor: pointer;
@@ -132,6 +133,12 @@
   }
 
   .formContainer {
-    padding: 1.5rem;
+    padding: 0.2rem;
+    
   }
+  .formLabel {
+
+  font-weight: 500;
+  cursor: pointer;
+}
 }

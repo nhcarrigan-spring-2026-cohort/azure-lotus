@@ -9,6 +9,7 @@ import NotFound from './pages/NotFound.jsx';
 import InviteVolunteers from './pages/InviteVolunteers.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Settings from './pages/Settings.jsx';
+import Footer from './components/ui/Footer.jsx';
 
 import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
 import GuestRoute from './components/auth/GuestRoute.jsx';
@@ -61,6 +62,7 @@ export default function App() {
           <Route path="/invitevolunteers" element={<InviteVolunteers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <Footer />
       </AuthProvider>
     </QueryClientProvider>
   );

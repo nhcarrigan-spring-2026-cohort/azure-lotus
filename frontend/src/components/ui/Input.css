@@ -4,27 +4,29 @@
 }
 
 .input-field {
+  height: 65px;
   padding: 20px;
   font-size: 1.25rem;
-  color: darkgreen;
+  color: #7e8082FF;
   line-height: 1.5;
   border: 2px solid lightgray;
-  border-radius: 16px;
-  background-color: whitesmoke;
+  border-radius: 20px 20px 20px 20px;
+  border: 2px solid #93979c40;
   transition: all 0.5s ease;
-  box-shadow: 0px 2px 1px 0px rgba(0, 0, 0, 0.5);
+  box-shadow: -4px 4px 5px 0px #00000029, inset 0px -1px 5px 2px #0000001A;
+  box-shadow: inset 0px -1px 5px 2px #0000001A;
 }
 
 .input-field::placeholder {
-  color: olivedrab;
+  color: #7e8082FF;;
   font-size: 1.125rem;
   opacity: 0.8;
 }
 
 .input-field:focus {
   outline: none;
-  border-color: lightgreen;
-  box-shadow: 0 0 0 3px darkgreen;
+  border-color: rgb(210, 144, 238);
+  box-shadow: -4px 4px 5px 0px #00000029, inset 0px -1px 5px 2px #0000001A;
   transform: scale(1.02);
 }
 

@@ -1,0 +1,29 @@
+.footer-body {
+  background-color: #000;
+  color: #fff;
+  width: 100%;
+  padding: 1px 2px;
+  font-size: clamp(0.75rem, 1.5vw, 0.95rem);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+}
+
+
+
+@media (max-width:520px) {
+  .footer-body {
+    position:static;
+    bottom: 0;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+}
