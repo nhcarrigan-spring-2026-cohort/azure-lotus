@@ -39,7 +39,7 @@ app.include_router(home_router, tags=["home", "health-check"])
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(check_in_router, prefix="/check_in", tags=["checkin"])
 app.include_router(relationships_router, prefix="/relationships", tags=["relationships"])
-app.include_router(alerts_router, prefix="/alers", tags=["alerts"])
+app.include_router(alerts_router, prefix="/alerts", tags=["alerts"])
 
 app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 app.add_exception_handler(HTTPException, http_exception_handler)

@@ -14,9 +14,13 @@ from shared.api_response import ApiResponse
 
 router=APIRouter()
 
-@router.get('/{alert_id}/resolve', response_model=ApiResponse)
+@router.patch('/{alert_id}/resolve', response_model=ApiResponse)
 async def resolve_alert(alert_id: UUID, response=Response, db: Session=Depends(get_session)):
     alert=db.query(Alert).filter(Alert.id == alert_id).first()
+
+    if not alert:
+        raise HTTPException(404, detail='Alert not found')
+    
 #    print(f'Alert obj: {alert}')
 #    print(f'Resolved status: {alert.resolved}')
 
