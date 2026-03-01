@@ -160,3 +160,59 @@ async def create_relationship(
     session.commit()
     session.refresh(relationship)
     return relationship
+
+
+async def get_monitoring(current_user_email: str, session: Session) -> list[dict]:
+    """Return all seniors the current user is monitoring (user is caregiver)."""
+    current_user = session.exec(
+        select(User).where(User.email == current_user_email)
+    ).first()
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authenticated user not found")
+
+    relationships = session.exec(
+        select(Relationship).where(Relationship.caregiver_id == current_user.id)
+    ).all()
+
+    result = []
+    for rel in relationships:
+        senior = session.get(User, rel.senior_id)
+        if senior:
+            result.append({
+                "relationship_id": str(rel.id),
+                "senior_id": str(senior.id),
+                "first_name": senior.first_name,
+                "last_name": senior.last_name,
+                "email": senior.email,
+                "phone_number": senior.phone_number,
+                "since": rel.created_at,
+            })
+    return result
+
+
+async def get_monitors(current_user_email: str, session: Session) -> list[dict]:
+    """Return all caregivers monitoring the current user (user is senior)."""
+    current_user = session.exec(
+        select(User).where(User.email == current_user_email)
+    ).first()
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authenticated user not found")
+
+    relationships = session.exec(
+        select(Relationship).where(Relationship.senior_id == current_user.id)
+    ).all()
+
+    result = []
+    for rel in relationships:
+        caregiver = session.get(User, rel.caregiver_id)
+        if caregiver:
+            result.append({
+                "relationship_id": str(rel.id),
+                "caregiver_id": str(caregiver.id),
+                "first_name": caregiver.first_name,
+                "last_name": caregiver.last_name,
+                "email": caregiver.email,
+                "phone_number": caregiver.phone_number,
+                "since": rel.created_at,
+            })
+    return result
