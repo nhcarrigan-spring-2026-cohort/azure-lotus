@@ -1,74 +1,72 @@
-from datetime import date
+from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Request
 from sqlmodel import Session
 
 from core.database.session import get_session
 from features.checkins.models import CheckIn
 from shared.api_response import ApiResponse
-from shared.email_service import send_email_to_missing_checkin
-from shared.filter_commands import CheckinFilterCommand, validate_checkin_filter_command
 
 from .services import (
-    create_daily_checkins_service,
-    get_check_in_history,
-    get_daily_checkin,
-    get_missing_checkin_history,
-    mark_missing_and_notify,
+    complete_checkin,
+    create_todays_checkin,
+    get_todays_checkin,
+    trigger_alert,
 )
 
 router = APIRouter()
 
 
-def get_checkin_filter(
-    offset: int = 0,
-    limit: int = 10,
-    from_date: date = None,
-    to_date: date = None,
-) -> CheckinFilterCommand:
-    """Dependency to create CheckinFilterCommand from query parameters."""
-    return CheckinFilterCommand(
-        offset=offset, limit=limit, from_date=from_date, to_date=to_date
+@router.post("", response_model=ApiResponse[CheckIn], status_code=201)
+async def create_checkin(
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    """Create today's check-in for the logged-in senior. Returns 400 if already exists today."""
+    current_user_email = request.state.current_user["email"]
+    checkin = await create_todays_checkin(current_user_email, session)
+    return ApiResponse(success=True, message="Check-in created successfully", data=checkin)
+
+
+@router.get("/today", response_model=ApiResponse[Optional[CheckIn]])
+async def get_today_checkin(
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    """Get today's check-in for the logged-in senior. Returns null if none exists."""
+    current_user_email = request.state.current_user["email"]
+    checkin = await get_todays_checkin(current_user_email, session)
+    return ApiResponse(
+        success=True,
+        message="Today's check-in retrieved" if checkin else "No check-in for today",
+        data=checkin,
     )
 
 
-@router.get("/{senior_id}/daily", response_model=ApiResponse)
-async def senior_daily_checkin(
-    senior_id: UUID,
+@router.put("/{checkin_id}/complete", response_model=ApiResponse[CheckIn])
+async def complete_checkin_route(
+    checkin_id: UUID,
+    request: Request,
     session: Session = Depends(get_session),
 ):
-    """Get the daily check-in of a senior."""
+    """Mark a check-in as complete. Records completed_at timestamp."""
+    current_user_email = request.state.current_user["email"]
+    checkin = await complete_checkin(checkin_id, current_user_email, session)
+    return ApiResponse(success=True, message="Check-in marked as complete", data=checkin)
 
-    daily_checkin = await get_daily_checkin(senior_id, session)
-    return ApiResponse(success=True, message="", data=daily_checkin)
 
-
-@router.get("/{senior_id}/history", response_model=ApiResponse)
-async def senior_checkin_history(
-    senior_id: UUID,
+@router.put("/{checkin_id}/alert", response_model=ApiResponse[CheckIn])
+async def alert_checkin(
+    checkin_id: UUID,
+    request: Request,
     session: Session = Depends(get_session),
-    payload: CheckinFilterCommand = Depends(get_checkin_filter),
 ):
-    """Get the history of check-ins for a senior."""
-    if not validate_checkin_filter_command(payload):
-        raise HTTPException(status_code=400, detail="Invalid filter command")
-
-    checkin_history = await get_check_in_history(senior_id, payload, session)
-    return ApiResponse(success=True, message="", data=checkin_history)
-
-
-@router.get("/{senior_id}/missing", response_model=ApiResponse)
-async def senior_missing_checkin_history(
-    senior_id: UUID,
-    session: Session = Depends(get_session),
-    payload: CheckinFilterCommand = Depends(get_checkin_filter),
-):
-    """Get the missing history of check-ins for a senior."""
-    if not validate_checkin_filter_command(payload):
-        raise HTTPException(status_code=400, detail="Invalid filter command")
-
-    missing_checkin_history = await get_missing_checkin_history(
-        senior_id, payload, session
+    """Trigger an emergency alert. Sets status to ALERTED and notifies all caregivers."""
+    current_user_email = request.state.current_user["email"]
+    checkin = await trigger_alert(checkin_id, current_user_email, session)
+    return ApiResponse(
+        success=True,
+        message="Emergency alert triggered for all caregivers",
+        data=checkin,
     )
-    return ApiResponse(success=True, message="", data=missing_checkin_history)
