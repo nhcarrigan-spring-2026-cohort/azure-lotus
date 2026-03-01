@@ -1,10 +1,11 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from typing import Optional
 from uuid import UUID
 
 from fastapi import HTTPException, status
 from sqlmodel import Session, select
 
+from features.alerts.models import Alert
 from features.checkins.models import CheckIn
 from features.relationships.models import Relationship
 from features.users.models import User
@@ -41,7 +42,7 @@ async def create_todays_checkin(current_user_email: str, session: Session) -> Ch
                 detail="A check-in already exists for today",
             )
 
-    checkin = CheckIn(senior_id=user.id, status="pending")
+    checkin = CheckIn(senior_id=user.id, status=CheckInStatus.PENDING)
     session.add(checkin)
     session.commit()
     session.refresh(checkin)
@@ -63,6 +64,60 @@ async def get_todays_checkin(
         if c.created_at.date() == today:
             return c
     return None
+
+
+async def complete_checkin(checkin_id: UUID, current_user_email: str, session: Session) -> CheckIn:
+    """Mark a check-in as complete and record the completed_at timestamp."""
+    user = _get_user_by_email(current_user_email, session)
+
+    checkin = session.get(CheckIn, checkin_id)
+    if not checkin:
+        raise HTTPException(status_code=404, detail="Check-in not found")
+    if checkin.senior_id != user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to complete this check-in")
+
+    checkin.status = CheckInStatus.COMPLETED
+    checkin.completed_at = datetime.now(timezone.utc)
+    session.add(checkin)
+    session.commit()
+    session.refresh(checkin)
+    return checkin
+
+
+async def trigger_alert(checkin_id: UUID, current_user_email: str, session: Session) -> CheckIn:
+    """Set a check-in to ALERTED and create Alert records for all caregivers.
+
+    - 404 if check-in not found
+    - 403 if the current user does not own the check-in
+    - 400 if already ALERTED
+    """
+    user = _get_user_by_email(current_user_email, session)
+
+    checkin = session.get(CheckIn, checkin_id)
+    if not checkin:
+        raise HTTPException(status_code=404, detail="Check-in not found")
+    if checkin.senior_id != user.id:
+        raise HTTPException(status_code=403, detail="You do not own this check-in")
+    if checkin.status == CheckInStatus.ALERTED:
+        raise HTTPException(status_code=400, detail="Check-in is already ALERTED")
+
+    checkin.status = CheckInStatus.ALERTED
+    session.add(checkin)
+    session.flush()
+
+    relationships = session.exec(
+        select(Relationship).where(Relationship.senior_id == user.id)
+    ).all()
+
+    for _rel in relationships:
+        session.add(Alert(checkin_id=checkin.id, alert_type="emergency", resolved=False))
+
+    if not relationships:
+        session.add(Alert(checkin_id=checkin.id, alert_type="emergency", resolved=False))
+
+    session.commit()
+    session.refresh(checkin)
+    return checkin
 
 
 async def get_daily_checkin(senior_id: UUID, session) -> CheckIn:
@@ -152,37 +207,3 @@ def mark_missing_and_notify(session: Session):
     except Exception as error:
         logger.error("Error marking missing check-ins: %s", error)
         session.rollback()
-
-
-async def complete_checkin(
-    checkin_id: UUID,
-    current_user_email: str,
-    session: Session,
-) -> CheckIn:
-    """Mark a check-in as completed and record completed_at.
-
-    Only the senior who owns the check-in may complete it.
-    Returns 200 with updated check-in, 403 if not owner, 404 if not found.
-    """
-    user = _get_user_by_email(current_user_email, session)
-
-    checkin = session.get(CheckIn, checkin_id)
-    if not checkin:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Check-in {checkin_id} not found",
-        )
-
-    if checkin.senior_id != user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not own this check-in",
-        )
-
-    checkin.status = "completed"
-    checkin.completed_at = datetime.now(timezone.utc)
-    session.add(checkin)
-    session.commit()
-    session.refresh(checkin)
-    return checkin
-
