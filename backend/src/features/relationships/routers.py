@@ -9,7 +9,7 @@ from sqlmodel import Session
 from core.database.session import get_session
 from shared.api_response import ApiResponse
 
-from .services import create_relationship, get_checkin_history, get_missing_checkins, submit_checkin
+from .services import create_relationship, get_checkin_history, get_missing_checkins, get_monitoring, get_monitors, submit_checkin
 
 router = APIRouter()
 
@@ -85,6 +85,22 @@ async def relationship_submit_checkin(
         message="Check-in submitted",
         data={"id": str(checkin.id), "senior_id": str(checkin.senior_id), "status": checkin.status},
     )
+
+
+@router.get("/monitoring", response_model=ApiResponse[list])
+async def monitoring(request: Request, session: Session = Depends(get_session)):
+    """Return all seniors the authenticated user is monitoring (user is caregiver)."""
+    current_user_email: str = request.state.current_user["email"]
+    data = await get_monitoring(current_user_email=current_user_email, session=session)
+    return ApiResponse(success=True, message="Monitored seniors retrieved", data=data)
+
+
+@router.get("/monitors", response_model=ApiResponse[list])
+async def monitors(request: Request, session: Session = Depends(get_session)):
+    """Return all caregivers monitoring the authenticated user (user is senior)."""
+    current_user_email: str = request.state.current_user["email"]
+    data = await get_monitors(current_user_email=current_user_email, session=session)
+    return ApiResponse(success=True, message="Monitoring caregivers retrieved", data=data)
 
 
 @router.get(
