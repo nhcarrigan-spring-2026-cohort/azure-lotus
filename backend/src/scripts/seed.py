@@ -63,17 +63,17 @@ def get_or_create_relationship(
 	return relationship
 
 
-def get_or_create_checkin(session: Session, relationship_id) -> CheckIn:
+def get_or_create_checkin(session: Session, senior_id) -> CheckIn:
 	# Keep one seed check-in per relationship.
 	existing_checkin = session.exec(
-		select(CheckIn).where(CheckIn.relationship_id == relationship_id)
+		select(CheckIn).where(CheckIn.senior_id == senior_id)
 	).first()
 	if existing_checkin:
-		return existing_checkin
-
+		return existing_checkin	
+	
 	# Create a pending check-in baseline row.
 	checkin = CheckIn(
-		relationship_id=relationship_id,
+		senior_id=senior_id,
 		status="pending",
 	)
 	# Flush so alert creation can reference checkin.id.
@@ -140,7 +140,7 @@ def seed_database() -> None:
 			# Create a check-in baseline row for that relationship.
 			checkin = get_or_create_checkin(
 				session=session,
-				relationship_id=relationship.id,
+				senior_id=senior.id,
 			)
 
 			# Create a baseline alert tied to the check-in.
