@@ -1,0 +1,77 @@
+.container-HomeImageCharacters {
+    width: 600px;
+    height: 600px;
+    position: relative;
+    overflow: hidden;
+}
+
+
+.characters-circle {
+    position: absolute;
+    max-width: 20%;
+    height: auto;
+}
+
+#girl {
+    z-index: 10;
+    left: 20%;
+    top: 2.5%;
+}
+
+#man {
+    z-index: 9;
+    top: 7.5%;
+    right: 20%;
+}
+
+#boy {
+    z-index: 8;
+    right: 3.5%;
+    top: 40%;
+}
+
+
+#granny {
+    position: absolute;
+    max-width: 85%;
+    height: auto;
+    right: 10%;
+    bottom: 0;
+}
+
+
+.show-btn {
+    position: absolute;
+    max-width: 25%;
+    height: auto;
+}
+
+#green {
+    left: 2.5%;
+    top: 27.5%;
+}
+
+#red {
+    left: 2.5%;
+    top: 40%;
+}
+
+@media (max-width: 1024px) {
+    .container-HomeImageCharacters {
+        width: 500px;
+        height: 500px;
+        align-self: center;
+    }
+    #boy {
+    display: none;
+}
+}
+
+
+@media (max-width: 450px) {
+    .container-HomeImageCharacters {
+        width: 360px;
+        height: 360px;
+        align-self: center;
+    }
+}

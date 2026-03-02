@@ -1,7 +1,6 @@
 import { Route, Routes } from 'react-router';
 import Navbar from './components/Navbar.jsx';
 import About from './pages/about.jsx';
-import Explained from './pages/explained.jsx';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
@@ -9,6 +8,7 @@ import NotFound from './pages/NotFound.jsx';
 import InviteVolunteers from './pages/InviteVolunteers.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Settings from './pages/Settings.jsx';
+import Footer from './components/ui/Footer.jsx';
 
 import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
 import GuestRoute from './components/auth/GuestRoute.jsx';
@@ -25,7 +25,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/explained" element={<Explained />} />
+          {/* <Route path="/explained" element={<Explained />} /> */}
           <Route
             path="/signup"
             element={
@@ -61,6 +61,7 @@ export default function App() {
           <Route path="/invitevolunteers" element={<InviteVolunteers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <Footer />
       </AuthProvider>
     </QueryClientProvider>
   );
