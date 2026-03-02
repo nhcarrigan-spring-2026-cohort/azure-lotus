@@ -13,12 +13,14 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
+  const [isAuthReady, setIsAuthReady] = useState(false)
 
   const loginSuccess = (payload) => {
     setIsAuthenticated(true);
     setAccessToken(payload.user_info.access_token);
     setAxiosAccessToken(payload.user_info.access_token);
     setUser(payload.user_info);
+    setIsAuthReady(true)
   };
 
   const logout = () => {
@@ -27,6 +29,7 @@ export function AuthProvider({ children }) {
     setAccessToken(null);
     setAxiosAccessToken(null);
     setUser(null);
+    setIsAuthReady(true)
   };
 
   const refreshToken = async () => {
@@ -39,6 +42,8 @@ export function AuthProvider({ children }) {
       setAccessToken(null);
       setUser(null);
       setIsAuthenticated(false);
+    } finally {
+      setIsAuthReady(true)
     }
   };
 
@@ -48,6 +53,7 @@ export function AuthProvider({ children }) {
     user,
     isAuthenticated,
     accessToken,
+    isAuthReady
   };
 
   return (
