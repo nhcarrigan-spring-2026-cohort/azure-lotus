@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import './Navbar.css';
 import { useState } from 'react';
 import { useAuthContext } from '../context/AuthContext';
-
+import icon from '../assets/home-icon.png';
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
@@ -16,7 +16,15 @@ export default function Navbar() {
       <header className="navbar">
         <div className="navbar-left">
           <div className="logo">
-            <div className="logo-icon">👤</div>
+            {/* <div className="logo-icon">👤</div> */}
+            <img className="logo-icon"
+                 src={icon} alt="Home"
+                 onError={(e) => { 
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement.textContent = '🏠';
+                  }}
+            />
+            
             <span className="logo-text">Senior Checkin</span>
           </div>
         </div>
@@ -39,9 +47,6 @@ export default function Navbar() {
           </Link>
           <Link to="/about" onClick={closeMenu}>
             About
-          </Link>
-          <Link to="/explained" onClick={closeMenu}>
-            How it works
           </Link>
           {isAuthenticated ? (
             <div className="link-button" onClick={logout}>

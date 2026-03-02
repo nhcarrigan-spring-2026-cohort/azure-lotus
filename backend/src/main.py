@@ -5,7 +5,6 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from core.openapi import custom_openapi
-from core.setting import Settings
 from shared.exceptions import *
 from shared.scheduler import start_scheduler
 from src.core.auth.auth import auth_router
@@ -13,9 +12,10 @@ from src.core.middleware.jwt_auth import JWTAuthMiddleware
 from src.core.setting import Settings
 from src.features.checkins.routers import router as check_in_router
 from src.features.home.routers import router as home_router
-from src.features.alerts.alerts import alert_router
-app = FastAPI(title=Settings.APP_NAME, version=Settings.VERSION)
+from src.features.relationships.routers import router as relationships_router
+from src.features.alerts.routers import alert_router as alerts_router
 
+app = FastAPI(title=Settings.APP_NAME, version=Settings.VERSION)
 app.add_middleware(JWTAuthMiddleware)
 app.add_middleware(
     CORSMiddleware,
@@ -36,7 +36,9 @@ app.openapi = custom_openapi(app)
 app.include_router(home_router, tags=["home", "health-check"])
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(check_in_router, prefix="/check_in", tags=["checkin"])
-app.include_router(alert_router, tags=["home", "health-check"])
+
+app.include_router(relationships_router, prefix="/relationships", tags=["relationships"])
+app.include_router(alerts_router, prefix="/alerts", tags=["alerts"])
 
 app.add_exception_handler(StarletteHTTPException, http_exception_handler)
 app.add_exception_handler(HTTPException, http_exception_handler)

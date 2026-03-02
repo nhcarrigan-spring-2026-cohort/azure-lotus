@@ -1,4 +1,5 @@
-from datetime import date, datetime, timezone
+from datetime import date, datetime, time, timezone
+from typing import Optional
 from uuid import UUID, uuid4
 
 from sqlmodel import Field, SQLModel
@@ -17,3 +18,5 @@ class CheckIn(SQLModel, table=True):
     senior_id: UUID = Field(foreign_key="users.id")
     status: str = Field(default="pending")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    completed_at: Optional[datetime] = Field(default=None, nullable=True)
+    checkin_time: Optional[time] = Field(default=None, nullable=True)

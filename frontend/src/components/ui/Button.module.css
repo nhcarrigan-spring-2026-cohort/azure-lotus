@@ -25,11 +25,11 @@
 
 /* VARIANTS */
 .btn-primary {
-  background: linear-gradient(to bottom, #1e8449, #145a32);
+  background-image: linear-gradient(to bottom, rgba(191, 110, 216, 1) 0%,rgba(121, 88, 198, 1) 100%);
   color: white;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    0 4px 0 #0b3d20,
+    0 4px 0 rgb(185, 53, 225)
     0 5px 10px rgba(0, 0, 0, 0.3);
 }
 
