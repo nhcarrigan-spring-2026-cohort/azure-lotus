@@ -26,7 +26,7 @@ export default function HomeSenior() {
             <div>Welcome {user?.email}</div>
             {
                 status === "pending"
-                    ? <CheckIn/>
+                    ? <CheckIn checkinId={todayCheckin.data.data.id}/>
                     : status === "completed"
                         ? <div>You have already checked In today</div>
                         : <div>You don't have a check in scheduled</div>
