@@ -12,6 +12,8 @@ export function AuthProvider({ children }) {
 
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // TODO: we can probably remove accessToken here and let the axios instance and
+  // interceptors handle it
   const [accessToken, setAccessToken] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false)
 

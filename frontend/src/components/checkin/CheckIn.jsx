@@ -3,19 +3,23 @@ import CheckInButton from '../ui/CheckInButton.jsx';
 import styles from './CheckIn.module.css';
 import { FaCheckCircle } from 'react-icons/fa';
 import { FaPlus } from 'react-icons/fa';
-import { useMutation } from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import {queryClient} from '../../lib/query-client.js';
 import {
   completeCheckInMutation,
   alertCheckInMutation,
+  getTodayCheckIn
 } from '../../api/checkin.js';
 
-export default function CheckIn() {
-  const { user, isAuthenticated } = useAuthContext();
+export default function CheckIn({
+  checkinId
+}) {
 
   const completeCheckIn = useMutation({
     mutationFn: completeCheckInMutation,
-    onSuccess: () => {
-      alert('Check In Successful');
+    onSuccess: (data) => {
+      alert(`Check In Successful. checkinId: ${JSON.stringify(data)}`);
+      queryClient.invalidateQueries(['checkin']);
     },
     onError: (error) => {
       alert(`Check In Failed: ${error.message}`);
@@ -26,6 +30,7 @@ export default function CheckIn() {
     mutationFn: alertCheckInMutation,
     onSuccess: () => {
       alert('Alert Successful');
+      queryClient.invalidateQueries(['checkin']);
     },
     onError: (error) => {
       alert(`Alert Failed: ${error.message}`);
@@ -34,14 +39,14 @@ export default function CheckIn() {
 
   return (
     <div className={styles.container}>
-      <div>Welcome {user?.email}</div>
+      <div>{`checkinId: ${checkinId}`}</div>
       <div className={styles.buttons}>
         <CheckInButton
           Icon={FaCheckCircle}
           text="I'm OK"
           subText="Check In"
           disabled={completeCheckIn.isPending}
-          onClick={() => completeCheckIn.mutate()}
+            onClick={() => completeCheckIn.mutate(checkinId)}
         />
         <CheckInButton
           variant="danger"
@@ -49,7 +54,7 @@ export default function CheckIn() {
           text="Alert Family"
           subText="Need Help!"
           disabled={alertCheckIn.isPending}
-          onClick={() => alertCheckIn.mutate()}
+            onClick={() => alertCheckIn.mutate(checkinId)}
         />
       </div>
     </div>
