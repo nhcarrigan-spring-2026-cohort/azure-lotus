@@ -21,6 +21,7 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
             "/health",
             "/email-test",
             # "/",  we can uncomment or add as nedded
+
         }
 
         if request.method == "OPTIONS" or request.url.path in excluded_paths:

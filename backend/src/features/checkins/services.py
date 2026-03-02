@@ -207,3 +207,37 @@ def mark_missing_and_notify(session: Session):
     except Exception as error:
         logger.error("Error marking missing check-ins: %s", error)
         session.rollback()
+
+
+async def complete_checkin(
+    checkin_id: UUID,
+    current_user_email: str,
+    session: Session,
+) -> CheckIn:
+    """Mark a check-in as completed and record completed_at.
+
+    Only the senior who owns the check-in may complete it.
+    Returns 200 with updated check-in, 403 if not owner, 404 if not found.
+    """
+    user = _get_user_by_email(current_user_email, session)
+
+    checkin = session.get(CheckIn, checkin_id)
+    if not checkin:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Check-in {checkin_id} not found",
+        )
+
+    if checkin.senior_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not own this check-in",
+        )
+
+    checkin.status = "completed"
+    checkin.completed_at = datetime.now(timezone.utc)
+    session.add(checkin)
+    session.commit()
+    session.refresh(checkin)
+    return checkin
+

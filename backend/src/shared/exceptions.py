@@ -5,6 +5,8 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
+
 
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     logger.warning(f"HTTP {exc.status_code} - {exc.detail} - Path: {request.url.path}")

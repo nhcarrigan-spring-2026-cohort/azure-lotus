@@ -106,55 +106,97 @@ def get_or_create_alert(session: Session, checkin_id, alert_type: str = "missed_
 
 
 def seed_database() -> None:
-	# Use a single transaction so baseline data is all-or-nothing.
 	with Session(engine) as session:
 		try:
-			# Seed one caregiver user.
-			caregiver = get_or_create_user(
-				session=session,
-				first_name="Alice",
-				last_name="Caregiver",
-				email="alice.caregiver@example.com",
-				phone_number="+15550000001",
-				raw_password="Password123",
-			)
+			# -------------------------
+			# CAREGIVERS
+			# -------------------------
+			caregivers_data = [
+				("Alice", "Caregiver", "alice.caregiver@example.com", "+15550000001"),
+				("Bob", "Helper", "bob.helper@example.com", "+15550000003"),
+				("Carol", "Support", "carol.support@example.com", "+15550000004"),
+			]
 
-			# Seed one senior user.
-			senior = get_or_create_user(
-				session=session,
-				first_name="Sam",
-				last_name="Senior",
-				email="sam.senior@example.com",
-				phone_number="+15550000002",
-				raw_password="Password123",
-			)
+			caregivers = []
+			for first_name, last_name, email, phone in caregivers_data:
+				user = get_or_create_user(
+					session=session,
+					first_name=first_name,
+					last_name=last_name,
+					email=email,
+					phone_number=phone,
+					raw_password="Password123",
+				)
+				caregivers.append(user)
 
-			# Link caregiver and senior.
-			relationship = get_or_create_relationship(
-				session=session,
-				senior_id=senior.id,
-				caregiver_id=caregiver.id,
-				priority=1,
-			)
+			# -------------------------
+			# SENIORS
+			# -------------------------
+			seniors_data = [
+				("Sam", "Senior", "sam.senior@example.com", "+15550000002"),
+				("Doris", "Elder", "doris.elder@example.com", "+15550000005"),
+				("Frank", "Golden", "frank.golden@example.com", "+15550000006"),
+			]
 
-			# Create a check-in baseline row for that relationship.
-			checkin = get_or_create_checkin(
-				session=session,
-				senior_id=senior.id,
-			)
+			seniors = []
+			for first_name, last_name, email, phone in seniors_data:
+				user = get_or_create_user(
+					session=session,
+					first_name=first_name,
+					last_name=last_name,
+					email=email,
+					phone_number=phone,
+					raw_password="Password123",
+				)
+				seniors.append(user)
 
-			# Create a baseline alert tied to the check-in.
-			get_or_create_alert(
-				session=session,
-				checkin_id=checkin.id,
-				alert_type="missed_checkin",
-			)
+			# -------------------------
+			# RELATIONSHIPS
+			# -------------------------
+			relationships = []
+			for i, senior in enumerate(seniors):
+				for priority, caregiver in enumerate(caregivers, start=1):
+					relationship = get_or_create_relationship(
+						session=session,
+						senior_id=senior.id,
+						caregiver_id=caregiver.id,
+						priority=priority,
+					)
+					relationships.append(relationship)
 
-			# Persist all inserts/updates once at the end.
+			# -------------------------
+			# CHECKINS + ALERTS
+			# -------------------------
+			for senior in seniors:
+				# Pending check-in
+				checkin_pending = get_or_create_checkin(
+					session=session,
+					senior_id=senior.id,
+				)
+
+				get_or_create_alert(
+					session=session,
+					checkin_id=checkin_pending.id,
+					alert_type="missed_checkin",
+				)
+
+				# Extra manual check-in example (não usa helper para permitir múltiplos)
+				extra_checkin = CheckIn(
+					senior_id=senior.id,
+					status="completed",
+				)
+				session.add(extra_checkin)
+				session.flush()
+
+				get_or_create_alert(
+					session=session,
+					checkin_id=extra_checkin.id,
+					alert_type="manual_review",
+				)
+
 			session.commit()
-			print("Seed complete: baseline users, relationship, checkin, and alert are ready.")
+			print("Seed complete: multiple caregivers, seniors, relationships, checkins and alerts created.")
 		except Exception:
-			# Roll back everything if any seed step fails.
 			session.rollback()
 			raise
 
