@@ -11,7 +11,6 @@ import {
 } from '../../api/checkin.js';
 
 export default function CheckIn() {
-  const { user, isAuthenticated } = useAuthContext();
 
   const completeCheckIn = useMutation({
     mutationFn: completeCheckInMutation,
@@ -35,7 +34,6 @@ export default function CheckIn() {
 
   return (
     <div className={styles.container}>
-      <div>Welcome {user?.email}</div>
       <div className={styles.buttons}>
         <CheckInButton
           Icon={FaCheckCircle}
