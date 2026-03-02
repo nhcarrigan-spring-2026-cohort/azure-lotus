@@ -33,15 +33,9 @@ export default function CheckIn() {
     },
   });
 
-  const todayCheckin = useQuery({
-    queryKey: ['checkin'],
-    queryFn: getTodayCheckIn,
-  })
-
   return (
     <div className={styles.container}>
       <div>Welcome {user?.email}</div>
-      <div>{JSON.stringify(todayCheckin.data)}</div>
       <div className={styles.buttons}>
         <CheckInButton
           Icon={FaCheckCircle}
