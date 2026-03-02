@@ -8,7 +8,7 @@ from features.users.models import User
 from shared.api_response import ApiResponse
 from sqlmodel import Session, select
 
-from .models import Alert
+from features.alerts.models import Alert
 
 
 def _get_user_by_email(email: str, session: Session) -> User:
