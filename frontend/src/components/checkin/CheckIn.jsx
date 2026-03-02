@@ -3,10 +3,11 @@ import CheckInButton from '../ui/CheckInButton.jsx';
 import styles from './CheckIn.module.css';
 import { FaCheckCircle } from 'react-icons/fa';
 import { FaPlus } from 'react-icons/fa';
-import { useMutation } from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import {
   completeCheckInMutation,
   alertCheckInMutation,
+  getTodayCheckIn
 } from '../../api/checkin.js';
 
 export default function CheckIn() {
@@ -32,9 +33,15 @@ export default function CheckIn() {
     },
   });
 
+  const todayCheckin = useQuery({
+    queryKey: ['checkin'],
+    queryFn: getTodayCheckIn,
+  })
+
   return (
     <div className={styles.container}>
       <div>Welcome {user?.email}</div>
+      <div>{JSON.stringify(todayCheckin.data)}</div>
       <div className={styles.buttons}>
         <CheckInButton
           Icon={FaCheckCircle}

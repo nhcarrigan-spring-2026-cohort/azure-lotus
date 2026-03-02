@@ -27,3 +27,12 @@ export const alertCheckInMutation = async (checkinId) => {
     throw e.response;
   }
 };
+
+export const getTodayCheckIn = async () => {
+  try {
+    const response = await api.get('/check_in/today');
+    return response.data;
+  } catch (e) {
+    throw e.response;
+  }
+}

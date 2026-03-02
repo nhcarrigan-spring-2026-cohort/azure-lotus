@@ -85,6 +85,11 @@ Expected: all listed IDs should show `data_type = uuid`.
 docker compose exec -e PYTHONPATH=/app app python src/scripts/seed.py
 ```
 
+or inside docker container
+```bash
+python -m src.scripts.seed
+```
+
 #### 6.3 Verify seeded data
 
 ```bash
