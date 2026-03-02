@@ -48,9 +48,6 @@ export default function Navbar() {
           <Link to="/about" onClick={closeMenu}>
             About
           </Link>
-          <Link to="/explained" onClick={closeMenu}>
-            How it works
-          </Link>
           {isAuthenticated ? (
             <div className="link-button" onClick={logout}>
               Logout

@@ -1,23 +1,24 @@
 .about-page{
     display: flex;
     justify-content: center;
-    align-items: center;
     width: 100%;
 }
-.container-about{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+.container-about {
+    position: relative;
+    width: 1600px;
+    height: 660px;
 }
+@media (max-width: 1600px) { 
+    .container-about { 
+        transform: scale(calc(100vw / 1600));
+    } 
+}
+
 .textbox-about {
     max-width: fit-content;
     position: absolute;
     width: 403.65px;
     height: 149.96px;
-    left: 58.16px;
-    top: 52.02px;
-
     border-radius: 10px;
     background-color: #ffffff;
     box-shadow: -4px 4px 4px 1px #00000026;
@@ -35,11 +36,11 @@
 }
 #green-btn-about{
     left: 278.86px;
-    top: 330px;
+    top: 130px;
 }
 #red-btn-about{
     left: 515px;
-    top: 330px;
+    top: 130px;
 }
 #warning-about{
     position: absolute;
@@ -47,35 +48,35 @@
     width: 150.85px;
     height: auto;
     left: 400px;
-    top: 500px;
+    top: 300px;
     z-index:3
 }
 
 #one-about{
     height: 100px;
     left: 19.67px;
-    top: 221px;
+    top: 21px;
     z-index:4;
 }
 #two-about{
     height: 130px;
     left: 47.04px;
-    top: 444px;
+    top: 244px;
 }
 #three-about{
     height: 100px;
     left: 365.17px;
-    top: 657px;
+    top: 457px;
 }
 #four-about{
     height: 100px;
-    left: 1064.73px;
-    top: 240px;
+    left: 1085px;
+    top: 40px;
 }
 #five-about{
     height: 130px;
     left: 860.01px;
-    top: 410px;
+    top: 210px;
 }
 
 #boy-about{
@@ -83,21 +84,23 @@
     width: 160.78px;
     height: auto;
     left: 756px;
-    top: 700px;
+    top: 500px;
+    z-index: 2;
 }
 #girl-about{
     position:absolute;
     width: 160.78px;
     height: auto;
     left: 919.35px;
-    top: 214px;
+    top: 14px;
 }
 #grandpa-about{
     position:absolute;
     width: 492px;
     height: auto;
     left: 1079px;
-    top: 392px;
+    top: 192px;
+    z-index: 5;
 }
 
 

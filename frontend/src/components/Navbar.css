@@ -19,14 +19,15 @@
   height: 12vh;
   display: flex;
   align-items: center;
-  justify-content:space-evenly;
-  padding: 10px 10px 0 10px;
+  justify-content:space-between;
+  padding: 10px 3% 0 3%;
   background-color: white;
   position: sticky;
   top: 0;
   z-index:999;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   width: 100vw;
+
 }
 
 .navbar-left {
