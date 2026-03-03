@@ -27,21 +27,25 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
         if request.method == "OPTIONS" or request.url.path in excluded_paths:
             return await call_next(request)
 
-        # Get Authorization header
         auth_header = request.headers.get("Authorization")
-        if not auth_header:
-            return JSONResponse(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                content={"detail": "Not authenticated - missing Authorization header"},
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+        token = None
 
-        # Parse Bearer token
-        scheme, _, token = auth_header.partition(" ")
-        if scheme.lower() != "bearer" or not token.strip():
+        if auth_header:
+            scheme, _, token = auth_header.partition(" ")
+            if scheme.lower() != "bearer" or not token.strip():
+                return JSONResponse(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    content={"detail": "Invalid authentication scheme or empty token"},
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+        
+        if not token:
+            token = request.cookies.get("refresh_token") 
+
+        if not token:
             return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                content={"detail": "Invalid authentication scheme or empty token"},
+                content={"detail": "Not authenticated - missing token"},
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
@@ -84,3 +88,4 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
 
         response: Response = await call_next(request)
         return response
+

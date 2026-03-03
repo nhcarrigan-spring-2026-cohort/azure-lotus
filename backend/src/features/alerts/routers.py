@@ -1,14 +1,17 @@
 from uuid import UUID
 
+from typing import Optional, Any
 from core.database.session import get_session
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status,Query
+from fastapi.responses import JSONResponse
 from features.checkins.models import CheckIn
 from features.relationships.models import Relationship
 from features.users.models import User
 from shared.api_response import ApiResponse
 from sqlmodel import Session, select
-
 from features.alerts.models import Alert
+
+
 
 
 def _get_user_by_email(email: str, session: Session) -> User:
@@ -43,10 +46,34 @@ def get_checkin_by_id(checkin_id: UUID, session: Session):
     return checkin
 
 
-router = APIRouter()
+alert_router = APIRouter()
 
 
-@router.patch("/{alert_id}/resolve", response_model=ApiResponse)
+
+@alert_router.get("/get")
+def get_alerts(
+    resolved: Optional[bool] = Query(None, description="Filter: ?resolved=false for active issues"),
+    db: Session = Depends(get_session)
+) -> Any:
+
+    try:
+        statement = select(Alert)
+        
+        if resolved is not None:
+            statement = statement.where(Alert.resolved == resolved)
+        
+        results = db.exec(statement).all()
+        
+        return results
+
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": f"Internal Server Error: {str(e)}"}
+        )
+
+
+@alert_router.patch("/{alert_id}/resolve", response_model=ApiResponse)
 async def resolve_alert(
     alert_id: UUID, request: Request, db: Session = Depends(get_session)
 ):
@@ -80,3 +107,4 @@ async def resolve_alert(
     db.commit()
     db.refresh(alert)
     return ApiResponse(success=True, message="", data=alert)
+
