@@ -14,6 +14,14 @@ const api = axios.create({
   },
 });
 
+const refreshTokenApi = axios.create({
+  baseURL: import.meta.env.VITE_API_BASEURL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  }
+})
+
 // if there's an access token, attach it to the request
 api.interceptors.request.use((config) => {
   if (accessToken) {
@@ -23,7 +31,7 @@ api.interceptors.request.use((config) => {
 });
 
 // if access token expired (server returns 401), get a new access token and retry the request
-/*
+
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -32,7 +40,7 @@ api.interceptors.response.use(
       if(error?.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
-          const refreshRes = await api.post('/auth/refresh')
+          const refreshRes = await refreshTokenApi.post('/auth/refresh')
           const newAccessToken = refreshRes?.data?.access_token
 
           if(newAccessToken) {
@@ -50,6 +58,6 @@ api.interceptors.response.use(
     }
 )
 
- */
+
 
 export default api;
