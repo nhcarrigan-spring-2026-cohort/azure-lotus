@@ -23,6 +23,7 @@ api.interceptors.request.use((config) => {
 });
 
 // if access token expired (server returns 401), get a new access token and retry the request
+/*
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -48,5 +49,7 @@ api.interceptors.response.use(
       return Promise.reject(error)
     }
 )
+
+ */
 
 export default api;
