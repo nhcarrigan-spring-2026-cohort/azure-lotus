@@ -19,7 +19,7 @@ export default function HomeSenior() {
     if (todayCheckin.pending || !todayCheckin.data) return <div>Loading...</div>
     if (todayCheckin.isError) return <div>Failed to load check-in.</div>;
 
-    const status = todayCheckin.data.data.status
+    const status = todayCheckin.data?.data?.status
 
     return (
         <>
