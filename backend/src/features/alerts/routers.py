@@ -21,16 +21,16 @@ def _get_user_by_email(email: str, session: Session) -> User:
     return user
 
 
-def get_relationship_by_id(user_id: UUID, session: Session):
-    relationship = session.exec(
+def get_relationships_by_id(user_id: UUID, session: Session):
+    relationships = session.exec(
         select(Relationship).where(user_id == Relationship.caregiver_id)
-    ).first()
-    if not relationship:
+    )
+    if not relationships:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Relationship not found"
         )
 
-    return relationship
+    return relationships
 
 
 def get_checkin_by_id(checkin_id: UUID, session: Session):
@@ -60,23 +60,37 @@ async def resolve_alert(
     user_email = request.state.current_user["email"]
     user_id = _get_user_by_email(user_email, db).id
 
-    relationship = get_relationship_by_id(user_id, db)
-    relationship_senior_id = relationship.senior_id
+    #Filter table relationships by the caregiver id
+    relationships = get_relationships_by_id(user_id, db)
 
+    '''
+    for r in relationship:
+        print(f'\nROW type:{type(r)}')
+        print(f'ROW CONTENT:{r}\n')
+    '''
+
+    #Filter table alerts with the id passed in the path parameter 
     alert = db.query(Alert).filter(Alert.id == alert_id).first()
 
     if not alert:
         raise HTTPException(404, detail="Alert not found")
 
+    #Take the checkin_id of such alert
     checkin_id = alert.checkin_id
-    checkin_senior_id = get_checkin_by_id(checkin_id, db).senior_id
+
+    #Get the senior id connected to that alert filtering by the checkin_id
+    senior_referred_by_alert = get_checkin_by_id(checkin_id, db).senior_id
 
     # Compare if the senior_id in the relationship is equal to senior_id in the checkin that triggered the alert
-    if checkin_senior_id != relationship_senior_id:
-        raise HTTPException(403, "Not authorized")
+    #relationship_senior_id = relationships.senior_id
+    for r in relationships:
+        if r.senior_id == senior_referred_by_alert:
+            alert.resolved = True
+            db.add(alert)
+            db.commit()
+            db.refresh(alert)
+            return ApiResponse(success=True, message="", data=alert)
 
-    alert.resolved = True
-    db.add(alert)
-    db.commit()
-    db.refresh(alert)
-    return ApiResponse(success=True, message="", data=alert)
+    raise HTTPException(403, "Not authorized")
+
+
