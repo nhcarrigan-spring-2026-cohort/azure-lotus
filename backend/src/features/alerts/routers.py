@@ -24,7 +24,7 @@ def _get_user_by_email(email: str, session: Session) -> User:
 def get_relationships_by_id(user_id: UUID, session: Session):
     relationships = session.exec(
         select(Relationship).where(user_id == Relationship.caregiver_id)
-    )
+    ).all()
     if not relationships:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Relationship not found"
@@ -63,12 +63,6 @@ async def resolve_alert(
     #Filter table relationships by the caregiver id
     relationships = get_relationships_by_id(user_id, db)
 
-    '''
-    for r in relationship:
-        print(f'\nROW type:{type(r)}')
-        print(f'ROW CONTENT:{r}\n')
-    '''
-
     #Filter table alerts with the id passed in the path parameter 
     alert = db.query(Alert).filter(Alert.id == alert_id).first()
 
@@ -81,8 +75,7 @@ async def resolve_alert(
     #Get the senior id connected to that alert filtering by the checkin_id
     senior_referred_by_alert = get_checkin_by_id(checkin_id, db).senior_id
 
-    # Compare if the senior_id in the relationship is equal to senior_id in the checkin that triggered the alert
-    #relationship_senior_id = relationships.senior_id
+    #Check if the senior id connected to the alert has a relationship with the caregiver
     for r in relationships:
         if r.senior_id == senior_referred_by_alert:
             alert.resolved = True
