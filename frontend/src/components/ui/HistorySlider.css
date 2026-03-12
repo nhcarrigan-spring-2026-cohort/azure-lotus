@@ -1,0 +1,58 @@
+.history-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 450px; /* Adjust this to fit your UI */
+    margin: 0 auto;
+}
+
+.slider-window {
+    display: flex;
+    overflow-x: auto; /* Enables sliding/swiping */
+    scroll-snap-type: x mandatory; /* Makes it snap to the center */
+    scrollbar-width: none; /* Hides scrollbar */
+    width: 100%;
+    /* Ensure it doesn't wrap lines */
+    white-space: nowrap; 
+}
+
+.slider-window::-webkit-scrollbar {
+    display: none; /* Hides scrollbar for Chrome/Safari */
+}
+
+.slider-item {
+    /* CRITICAL: Force each item to be exactly 1/3 of the window */
+    flex: 0 0 33.333%; 
+    scroll-snap-align: center;
+    text-align: center;
+    padding: 20px 0;
+    transition: all 0.2s ease;
+    
+    /* This prevents the text from squishing */
+    box-sizing: border-box;
+}
+
+.dimmed {
+    opacity: 0.2;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.active {
+    opacity: 1;
+    font-weight: 900;
+    font-size: 1.1rem;
+}
+
+.nav-arrow {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    opacity: 0.15;
+    transition: opacity 0.2s;
+}
+
+.nav-arrow:hover {
+    opacity: 0.8;
+}
