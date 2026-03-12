@@ -5,8 +5,11 @@ import { useAuthContext } from '../context/AuthContext.jsx';
 import { useMutation } from '@tanstack/react-query';
 import { loginRequest } from '../api/auth.js';
 import { useNavigate, useLocation } from 'react-router';
+import useTitle from '../components/hooks/useTitle';
+import HomeImageCharacters from './HomeVariations/HomeVisitor/HomeImageCharacters';
 
 export default function Login() {
+  useTitle('Log In');
   const [formData, setFormData] = useState({
     email: 'user@example.com',
     password: 'string1234',
@@ -40,64 +43,70 @@ export default function Login() {
   };
 
   return (
-    <>
-      <div className="login-page">
-        <div className="login-container">
-          <h1 className="login-title">Welcome Back</h1>
-          <p className="login-subtitle">
-            Enter your username and password to log in.
-          </p>
+    <div className='container-login'>
+      <div className='leftup'>
+          <div className="login-page">
+          <div className="login-container">
+            <h1 className="login-title">Welcome Back</h1>
+            <p className="login-subtitle">
+              Enter your username and password to log in.
+            </p>
 
-          <form className="login-form" autoComplete="off">
-            <label className="login-label" htmlFor="username">
-              Username
-            </label>
-            <div className="input-wrap">
-              <input
-                id="username"
-                className="login-input"
-                type="text"
-                placeholder="Enter your username"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                required
-              />
-            </div>
+            <form className="login-form" autoComplete="off">
+              <label className="login-label" htmlFor="username">
+                Username
+              </label>
+              <div className="input-wrap">
+                <input
+                  id="username"
+                  className="login-input"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  required
+                />
+              </div>
 
-            <label className="login-label" htmlFor="password">
-              Password
-            </label>
-            <div className="input-wrap">
-              <input
-                id="password"
-                className="login-input"
-                type="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                required
-              />
-            </div>
+              <label className="login-label" htmlFor="password">
+                Password
+              </label>
+              <div className="input-wrap">
+                <input
+                  id="password"
+                  className="login-input"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  required
+                />
+              </div>
 
-            <button
-              className="login-button"
-              type="button"
-              onClick={handleLogin}
-              disabled={login.isPending}
-            >
-              LOG IN ➡️
-            </button>
-          </form>
+              <button
+                className="login-button"
+                type="button"
+                onClick={handleLogin}
+                disabled={login.isPending}
+              >
+                LOG IN
+              </button>
+            </form>
 
-          <Link className="login-signup" to="/signup">
-            Need help logging in?
-          </Link>
+            <Link className="login-signup" to="/signup">
+              Need help logging in?
+            </Link>
+          </div>
         </div>
       </div>
-    </>
+      <div className='rightdown'>
+        <HomeImageCharacters />
+      </div>
+      
+    </div>
   );
 }

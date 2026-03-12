@@ -128,11 +128,45 @@ export default function CreateAccount() {
 
   return (
     <div className={styles.formContainer}>
-      <h1 className={styles.title}>Create Your Account</h1>
+      {/* <h1 className={styles.title}>Create Your Account</h1>
       <p className={styles.subtitle}>
         Sign up to start connecting and monitoring wellness check-ins
-      </p>
+      </p> */}
       <form onSubmit={handleSubmit}>
+        <div className={`${styles.formGroup} ${styles.fullNameWrapper}`}>
+          <div className={styles.nameWrapper}>
+            <label htmlFor="first-name-field" className={styles.formLabel}>
+              First Name
+            </label>
+            <Input
+              id="first-name-field"
+              type="text"
+              name="firstName"
+              className={styles.formInput}
+              errorClassName={styles.errorTextBox}
+              placeholder="First Name"
+              value={formData.firstName}
+              onChange={handleChange}
+              error={errors.firstName}
+            />
+          </div>
+          <div className={styles.nameWrapper}>
+            <label htmlFor="last-name-field" className={styles.formLabel}>
+              Last Name
+            </label>
+            <Input
+              id="last-name-field"
+              type="text"
+              name="lastName"
+              className={styles.formInput}
+              errorClassName={styles.errorTextBox}
+              placeholder="Last Name"
+              value={formData.lastName}
+              onChange={handleChange}
+              error={errors.lastName}
+            />
+          </div>
+        </div>
         <div className={styles.formGroup}>
           <label htmlFor="email-field" className={styles.formLabel}>
             Email
@@ -209,40 +243,7 @@ export default function CreateAccount() {
             )}
           </button>
         </div>
-        <div className={`${styles.formGroup} ${styles.fullNameWrapper}`}>
-          <div className={styles.nameWrapper}>
-            <label htmlFor="first-name-field" className={styles.formLabel}>
-              First Name
-            </label>
-            <Input
-              id="first-name-field"
-              type="text"
-              name="firstName"
-              className={styles.formInput}
-              errorClassName={styles.errorTextBox}
-              placeholder="First Name"
-              value={formData.firstName}
-              onChange={handleChange}
-              error={errors.firstName}
-            />
-          </div>
-          <div className={styles.nameWrapper}>
-            <label htmlFor="last-name-field" className={styles.formLabel}>
-              Last Name
-            </label>
-            <Input
-              id="last-name-field"
-              type="text"
-              name="lastName"
-              className={styles.formInput}
-              errorClassName={styles.errorTextBox}
-              placeholder="Last Name"
-              value={formData.lastName}
-              onChange={handleChange}
-              error={errors.lastName}
-            />
-          </div>
-        </div>
+        
         <div className={styles.formGroup}>
           <label htmlFor="phone-number-field" className={styles.formLabel}>
             Phone Number

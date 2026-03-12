@@ -1,12 +1,21 @@
 import { createContext, useContext, useState } from 'react';
 import { setAxiosAccessToken } from '../lib/axios.js';
+import api from '../lib/axios.js';
 
 const AuthContext = createContext(null);
+import { useEffect } from 'react';
 
 export function AuthProvider({ children }) {
+  useEffect(() => {
+    refreshToken();
+  }, []);
+
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // TODO: we can probably remove accessToken here and let the axios instance and
+  // interceptors handle it
   const [accessToken, setAccessToken] = useState(null);
+  const [isAuthReady, setIsAuthReady] = useState(false)
 
   const loginSuccess = (payload) => {
     const token = payload.user_info.access_token;
@@ -14,6 +23,7 @@ export function AuthProvider({ children }) {
     setAccessToken(token);
     setAxiosAccessToken(token);
     setUser(payload.user_info);
+    setIsAuthReady(true)
   };
 
   const logout = () => {
@@ -22,6 +32,22 @@ export function AuthProvider({ children }) {
     setAccessToken(null);
     setAxiosAccessToken(null);
     setUser(null);
+    setIsAuthReady(true)
+  };
+
+  const refreshToken = async () => {
+    try {
+      const res = await api.post('/auth/refresh');
+      setAccessToken(res.data.access_token);
+      setUser(res.data.user_info);
+      setIsAuthenticated(true);
+    } catch (error) {
+      setAccessToken(null);
+      setUser(null);
+      setIsAuthenticated(false);
+    } finally {
+      setIsAuthReady(true)
+    }
   };
 
   const authValue = {
@@ -30,6 +56,7 @@ export function AuthProvider({ children }) {
     user,
     isAuthenticated,
     accessToken,
+    isAuthReady
   };
 
   return (

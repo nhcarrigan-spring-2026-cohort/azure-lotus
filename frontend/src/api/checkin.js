@@ -4,11 +4,8 @@ import api from '../lib/axios.js';
 // Assuming a checkin would already be created with a "pending" status
 export const completeCheckInMutation = async (checkinId) => {
   try {
-    // TODO: add checkin api call here to update checkin status
-    return {
-      checkinId,
-      status: 'completed',
-    };
+    const res = await api.put(`/check_in/${checkinId}/complete`);
+    return res.data;
   } catch (e) {
     throw e.response;
   }
@@ -18,12 +15,18 @@ export const completeCheckInMutation = async (checkinId) => {
 // Assuming a checkin would already be created with a "pending" status
 export const alertCheckInMutation = async (checkinId) => {
   try {
-    // TODO: add api call to update checkin status
-    return {
-      checkinId,
-      status: 'alert',
-    };
+    const res = await api.put(`/check_in/${checkinId}/alert`);
+    return res.data;
   } catch (e) {
     throw e.response;
   }
 };
+
+export const getTodayCheckIn = async () => {
+  try {
+    const response = await api.get('/check_in/today');
+    return response.data;
+  } catch (e) {
+    throw e.response;
+  }
+}

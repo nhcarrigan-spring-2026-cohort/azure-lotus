@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
-from typing import Dict
+from typing import Dict, Optional
 
 import bcrypt
 import jwt
@@ -18,7 +20,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     )
 
 
-def create_access_token(data: dict) -> str | None:
+def create_access_token(data: dict) -> Optional[str]:
     if not Settings.JWT_SECRET_KEY:
         return None
 
