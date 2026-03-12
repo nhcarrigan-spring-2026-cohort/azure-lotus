@@ -1,13 +1,17 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
+from typing import Optional
 from uuid import UUID
 
 from fastapi import HTTPException, status
 from sqlmodel import Session, select
 
+from features.alerts.models import Alert
+from features.checkins.models import CheckIn
 from features.relationships.models import Relationship
 from features.users.models import User
-
-from .models import CheckIn, CheckInWithSenior
+from shared.email_service import send_email_to_missing_checkin
+from shared.enums import CheckInStatus
+from shared.logging import logger
 
 
 def _get_user_by_email(email: str, session: Session) -> User:
@@ -20,105 +24,220 @@ def _get_user_by_email(email: str, session: Session) -> User:
     return user
 
 
-async def get_caregiver_dashboard(
-    current_user_email: str,
-    session: Session,
-) -> list[CheckInWithSenior]:
-    """Return caregiver dashboard rows with senior profile and latest check-in."""
-    caregiver = _get_user_by_email(current_user_email, session)
+async def create_todays_checkin(current_user_email: str, session: Session) -> CheckIn:
+    """Create today's check-in for the authenticated senior.
 
-    relationships = session.exec(
-        select(Relationship).where(Relationship.caregiver_id == caregiver.id)
+    Returns 400 if a check-in already exists for today.
+    """
+    user = _get_user_by_email(current_user_email, session)
+    today = datetime.now(timezone.utc).date()
+
+    existing = session.exec(
+        select(CheckIn).where(CheckIn.senior_id == user.id)
     ).all()
-    if not relationships:
-        return []
+    for c in existing:
+        if c.created_at.date() == today:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="A check-in already exists for today",
+            )
 
-    senior_ids = [relationship.senior_id for relationship in relationships]
-    seniors = session.exec(select(User).where(User.id.in_(senior_ids))).all()
-    seniors_by_id = {senior.id: senior for senior in seniors}
+    checkin = CheckIn(senior_id=user.id, status=CheckInStatus.PENDING)
+    session.add(checkin)
+    session.commit()
+    session.refresh(checkin)
+    return checkin
+
+
+async def get_todays_checkin(
+    current_user_email: str, session: Session
+) -> Optional[CheckIn]:
+    """Return today's check-in for the authenticated senior, or None if it doesn't exist."""
+    user = _get_user_by_email(current_user_email, session)
+    today = datetime.now(timezone.utc).date()
 
     checkins = session.exec(
-        select(CheckIn)
-        .where(CheckIn.senior_id.in_(senior_ids))
-        .order_by(CheckIn.created_at.desc())
+        select(CheckIn).where(CheckIn.senior_id == user.id)
     ).all()
 
-    latest_checkin_by_senior: dict[UUID, CheckIn] = {}
-    for checkin in checkins:
-        if checkin.senior_id not in latest_checkin_by_senior:
-            latest_checkin_by_senior[checkin.senior_id] = checkin
+    for c in checkins:
+        if c.created_at.date() == today:
+            return c
+    return None
 
-    dashboard_data: list[CheckInWithSenior] = []
-    for relationship in relationships:
-        senior = seniors_by_id.get(relationship.senior_id)
-        if not senior:
-            continue
 
-        latest_checkin = latest_checkin_by_senior.get(relationship.senior_id)
-        dashboard_data.append(
-            CheckInWithSenior(
-                relationship_id=relationship.id,
-                senior_id=senior.id,
-                first_name=senior.first_name,
-                last_name=senior.last_name,
-                phone_number=senior.phone_number,
-                status=latest_checkin.status if latest_checkin else None,
-                time=latest_checkin.created_at if latest_checkin else None,
-            )
-        )
+async def complete_checkin(checkin_id: UUID, current_user_email: str, session: Session) -> CheckIn:
+    """Mark a check-in as complete and record the completed_at timestamp."""
+    user = _get_user_by_email(current_user_email, session)
 
-    return dashboard_data
+    checkin = session.get(CheckIn, checkin_id)
+    if not checkin:
+        raise HTTPException(status_code=404, detail="Check-in not found")
+    if checkin.senior_id != user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to complete this check-in")
+
+    checkin.status = CheckInStatus.COMPLETED
+    checkin.completed_at = datetime.now(timezone.utc)
+    session.add(checkin)
+    session.commit()
+    session.refresh(checkin)
+    return checkin
+
+
+async def trigger_alert(checkin_id: UUID, current_user_email: str, session: Session) -> CheckIn:
+    """Set a check-in to ALERTED and create Alert records for all caregivers.
+
+    - 404 if check-in not found
+    - 403 if the current user does not own the check-in
+    - 400 if already ALERTED
+    """
+    user = _get_user_by_email(current_user_email, session)
+
+    checkin = session.get(CheckIn, checkin_id)
+    if not checkin:
+        raise HTTPException(status_code=404, detail="Check-in not found")
+    if checkin.senior_id != user.id:
+        raise HTTPException(status_code=403, detail="You do not own this check-in")
+    if checkin.status == CheckInStatus.ALERTED:
+        raise HTTPException(status_code=400, detail="Check-in is already ALERTED")
+
+    checkin.status = CheckInStatus.ALERTED
+    session.add(checkin)
+    session.flush()
+
+    relationships = session.exec(
+        select(Relationship).where(Relationship.senior_id == user.id)
+    ).all()
+
+    for _rel in relationships:
+        session.add(Alert(checkin_id=checkin.id, alert_type="emergency", resolved=False))
+
+    if not relationships:
+        session.add(Alert(checkin_id=checkin.id, alert_type="emergency", resolved=False))
+
+    session.commit()
+    session.refresh(checkin)
+    return checkin
 
 
 async def get_daily_checkin(senior_id: UUID, session) -> CheckIn:
-    """Get the daily check-in for a senior.
-    
-    This will notify all caregivers associated with this senior through their relationships.
-    """
-    senior = session.exec(select(User).where(User.id == senior_id)).first()
+    """Get the daily check-in for a senior."""
+    senior = None
     if not senior:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Couldn't find senior {senior_id}",
+            status.HTTP_404_NOT_FOUND,
+            f"Couldn't find senior {senior_id}",
         )
+    return None
+
+
+async def get_missing_checkin_history(senior_id: UUID, session) -> list:
+    """Get the missing check-in history for a senior."""
+    senior = None
+    if not senior:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            f"Couldn't find senior {senior_id}",
+        )
+    return []
+
+
+async def get_check_in_history(senior_id: UUID, session) -> list:
+    """Get the check-in history for a senior."""
+    senior = None
+    if not senior:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            f"Couldn't find senior {senior_id}",
+        )
+    return []
+
+
+def create_daily_checkins_service(session: Session):
+    """Create daily check-ins for seniors that don't already have one today."""
+    seniors = session.exec(
+        select(User).join(Relationship, User.id == Relationship.senior_id)
+    ).all()
 
     today = datetime.now(timezone.utc).date()
-    checkins = session.exec(
-        select(CheckIn)
-        .where(CheckIn.senior_id == senior_id)
-        .order_by(CheckIn.created_at.desc())
-    ).all()
-    for checkin in checkins:
-        if checkin.created_at.date() == today:
-            return checkin
-    return None
-    
-async def get_missing_checkin_history(senior_id: UUID, session) -> CheckIn:
-    """Get the missing check-in history for a senior."""
-    senior = session.exec(select(User).where(User.id == senior_id)).first()
-    if not senior:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Couldn't find senior {senior_id}",
-        )
-    return session.exec(
-        select(CheckIn)
-        .where(CheckIn.senior_id == senior_id)
-        .where(CheckIn.status == "missed")
-        .order_by(CheckIn.created_at.desc())
-    ).all()
 
-async def get_check_in_history(senior_id: UUID, session) -> CheckIn:
-    """Get the check-in history for a senior."""
-    senior = session.exec(select(User).where(User.id == senior_id)).first()
-    if not senior:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Couldn't find senior {senior_id}",
+    for senior in seniors:
+        existing = session.exec(
+            select(CheckIn).where(CheckIn.senior_id == senior.id)
+        ).all()
+
+        if any(checkin.created_at.date() == today for checkin in existing):
+            continue
+
+        session.add(
+            CheckIn(
+                senior_id=senior.id,
+                created_at=datetime.now(timezone.utc),
+                status=CheckInStatus.PENDING,
+            )
         )
 
-    return session.exec(
-        select(CheckIn)
-        .where(CheckIn.senior_id == senior_id)
-        .order_by(CheckIn.created_at.desc())
+    try:
+        session.commit()
+    except Exception as error:
+        logger.error("Error creating daily check-ins: %s", error)
+        session.rollback()
+
+
+def mark_missing_and_notify(session: Session):
+    """Mark pending check-ins as missed and email caregivers."""
+    pending_checkins = session.exec(
+        select(CheckIn).where(CheckIn.status == CheckInStatus.PENDING)
     ).all()
+
+    for checkin in pending_checkins:
+        caregivers = session.exec(
+            select(User)
+            .join(Relationship, User.id == Relationship.caregiver_id)
+            .where(Relationship.senior_id == checkin.senior_id)
+        ).all()
+
+        for caregiver in caregivers:
+            send_email_to_missing_checkin(caregiver.email)
+
+        checkin.status = CheckInStatus.MISSED
+
+    try:
+        session.commit()
+    except Exception as error:
+        logger.error("Error marking missing check-ins: %s", error)
+        session.rollback()
+
+
+async def complete_checkin(
+    checkin_id: UUID,
+    current_user_email: str,
+    session: Session,
+) -> CheckIn:
+    """Mark a check-in as completed and record completed_at.
+
+    Only the senior who owns the check-in may complete it.
+    Returns 200 with updated check-in, 403 if not owner, 404 if not found.
+    """
+    user = _get_user_by_email(current_user_email, session)
+
+    checkin = session.get(CheckIn, checkin_id)
+    if not checkin:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Check-in {checkin_id} not found",
+        )
+
+    if checkin.senior_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not own this check-in",
+        )
+
+    checkin.status = "completed"
+    checkin.completed_at = datetime.now(timezone.utc)
+    session.add(checkin)
+    session.commit()
+    session.refresh(checkin)
+    return checkin
+

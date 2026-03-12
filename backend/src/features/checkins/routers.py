@@ -1,50 +1,120 @@
-from uuid import UUID
-
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status
 from sqlmodel import Session
+from uuid import UUID
+from typing import Optional
 
 from core.database.session import get_session
-from features.checkins.models import CheckIn, CheckInWithSenior
+from features.checkins.models import CheckIn
 from shared.api_response import ApiResponse
 
 from .services import (
-    get_caregiver_dashboard,
+    complete_checkin,
+    create_todays_checkin,
     get_check_in_history,
     get_daily_checkin,
     get_missing_checkin_history,
+    get_todays_checkin,
+    trigger_alert,
 )
 
 router = APIRouter()
 
 
-@router.get("/dashboard", response_model=ApiResponse[list[CheckInWithSenior]])
-async def caregiver_dashboard(request: Request, session: Session = Depends(get_session)):
-    """Return caregiver dashboard rows using authenticated user identity."""
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=ApiResponse[CheckIn])
+async def create_checkin(request: Request, session: Session = Depends(get_session)):
+    """Create today's check-in for the authenticated senior.
+
+    Returns 400 if a check-in already exists for today.
+    """
     current_user_email: str = request.state.current_user["email"]
-    data = await get_caregiver_dashboard(
+    checkin = await create_todays_checkin(
+        current_user_email=current_user_email, session=session
+    )
+    return ApiResponse(success=True, message="Check-in created", data=checkin)
+
+
+@router.get("/today", response_model=ApiResponse[Optional[CheckIn]])
+async def today_checkin(request: Request, session: Session = Depends(get_session)):
+    """Return today's check-in for the authenticated senior.
+
+    Returns null in the data field (not 404) when no check-in exists yet.
+    """
+    current_user_email: str = request.state.current_user["email"]
+    checkin = await get_todays_checkin(
+        current_user_email=current_user_email, session=session
+    )
+    return ApiResponse(
+        success=True,
+        message="Today's check-in retrieved" if checkin else "No check-in for today",
+        data=checkin,
+    )
+
+
+@router.put("/{checkin_id}/complete", response_model=ApiResponse[CheckIn])
+async def complete_checkin_route(
+    checkin_id: UUID,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    """Mark a check-in as complete. Records completed_at timestamp."""
+    current_user_email = request.state.current_user["email"]
+    checkin = await complete_checkin(checkin_id, current_user_email, session)
+    return ApiResponse(success=True, message="Check-in marked as complete", data=checkin)
+
+
+@router.put("/{checkin_id}/alert", response_model=ApiResponse[CheckIn])
+async def alert_checkin(
+    checkin_id: UUID,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    """Trigger an emergency alert. Sets status to ALERTED and notifies all caregivers."""
+    current_user_email = request.state.current_user["email"]
+    checkin = await trigger_alert(checkin_id, current_user_email, session)
+    return ApiResponse(
+        success=True,
+        message="Emergency alert triggered for all caregivers",
+        data=checkin,
+    )
+
+
+@router.put("/{checkin_id}/complete", response_model=ApiResponse[CheckIn])
+async def complete_senior_checkin(
+    checkin_id: UUID,
+    request: Request,
+    session: Session = Depends(get_session),
+):
+    """Mark a check-in as completed and record the completed_at timestamp.
+
+    Only the senior who owns the check-in may call this endpoint.
+    Returns 200 with updated check-in, 403 if not owner, 404 if not found.
+    """
+    current_user_email: str = request.state.current_user["email"]
+    checkin = await complete_checkin(
+        checkin_id=checkin_id,
         current_user_email=current_user_email,
         session=session,
     )
-    return ApiResponse(success=True, message="Dashboard data retrieved", data=data)
+    return ApiResponse(success=True, message="Check-in completed", data=checkin)
+
 
 
 @router.get("/{senior_id}/daily", response_model=ApiResponse[CheckIn])
-async def senior_daily_checkin(
-    senior_id: UUID,
-    session: Session = Depends(get_session),
-):
-    """Get the daily check-in of a senior."""
+async def senior_daily_checkin(senior_id: UUID, session: Session = Depends(get_session)):
+    """Get the daily check-in of a senior"""
     daily_checkin = await get_daily_checkin(senior_id, session)
     return ApiResponse(success=True, message="", data=daily_checkin)
 
+
 @router.get("/{senior_id}/history", response_model=ApiResponse[CheckIn])
 async def senior_checkin_history(senior_id: UUID, session: Session = Depends(get_session)):
-    """ Get the history of check-ins for a senior """
+    """Get the history of check-ins for a senior"""
     checkin_history = await get_check_in_history(senior_id, session)
     return ApiResponse(success=True, message="", data=checkin_history)
 
+
 @router.get("/{senior_id}/missing", response_model=ApiResponse[CheckIn])
 async def senior_missing_checkin_history(senior_id: UUID, session: Session = Depends(get_session)):
-    """ Get the missing history of check-ins for a senior """
+    """Get the missing history of check-ins for a senior"""
     missing_checkin_history = await get_missing_checkin_history(senior_id, session)
     return ApiResponse(success=True, message="", data=missing_checkin_history)
