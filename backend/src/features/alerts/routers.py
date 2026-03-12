@@ -46,9 +46,7 @@ async def resolve_alert(
     senior_referred_by_alert =db.exec(select(CheckIn.senior_id).where(CheckIn.id == alert.checkin_id)).first()
 
     if not senior_referred_by_alert:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="No checkins found"
-        )
+        raise HTTPException(404, detail="No checkins found")
 
     #Take all the seniors related to the current user
     seniors_related_to_caregiver=db.exec(
@@ -56,9 +54,7 @@ async def resolve_alert(
         ).all()
 
     if not seniors_related_to_caregiver:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Relationship not found"
-        )
+        raise HTTPException(403, detail="Not authorized")
 
     #Check if the senior id connected to the alert has a relationship with the caregiver
     if senior_referred_by_alert in seniors_related_to_caregiver:
