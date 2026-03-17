@@ -18,9 +18,10 @@ export function AuthProvider({ children }) {
   const [isAuthReady, setIsAuthReady] = useState(false)
 
   const loginSuccess = (payload) => {
+    const token = payload.user_info.access_token;
     setIsAuthenticated(true);
-    setAccessToken(payload.user_info.access_token);
-    setAxiosAccessToken(payload.user_info.access_token);
+    setAccessToken(token);
+    setAxiosAccessToken(token);
     setUser(payload.user_info);
     setIsAuthReady(true)
   };

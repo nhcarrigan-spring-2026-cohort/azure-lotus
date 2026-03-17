@@ -1,0 +1,11 @@
+.cards-board{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: stretch;
+    justify-content: start;
+    row-gap: 35px;
+    padding-block-start: 20px;
+    padding-block-end: 20px;
+    
+}
