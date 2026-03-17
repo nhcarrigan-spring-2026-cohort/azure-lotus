@@ -20,33 +20,9 @@ def _get_user_by_email(email: str, session: Session) -> User:
         )
     return user
 
-
-def get_relationship_by_id(user_id: UUID, session: Session):
-    relationship = session.exec(
-        select(Relationship).where(user_id == Relationship.caregiver_id)
-    ).first()
-    if not relationship:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Relationship not found"
-        )
-
-    return relationship
-
-
-def get_checkin_by_id(checkin_id: UUID, session: Session):
-    checkin = session.exec(select(CheckIn).where(checkin_id == CheckIn.id)).first()
-    if not checkin:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="No checkins found"
-        )
-
-    return checkin
-
-
 router = APIRouter()
 
-
-@router.patch("/{alert_id}/resolve", response_model=ApiResponse)
+@router.patch("/{alert_id}/resolve", response_model=ApiResponse[Alert])
 async def resolve_alert(
     alert_id: UUID, request: Request, db: Session = Depends(get_session)
 ):
@@ -60,23 +36,32 @@ async def resolve_alert(
     user_email = request.state.current_user["email"]
     user_id = _get_user_by_email(user_email, db).id
 
-    relationship = get_relationship_by_id(user_id, db)
-    relationship_senior_id = relationship.senior_id
-
-    alert = db.query(Alert).filter(Alert.id == alert_id).first()
+    #Filter table alerts with the id passed in the path parameter 
+    alert = db.exec(select(Alert).where(Alert.id == alert_id)).first()
 
     if not alert:
         raise HTTPException(404, detail="Alert not found")
+    
+    #Get the senior id connected to the alert
+    senior_referred_by_alert =db.exec(select(CheckIn.senior_id).where(CheckIn.id == alert.checkin_id)).first()
 
-    checkin_id = alert.checkin_id
-    checkin_senior_id = get_checkin_by_id(checkin_id, db).senior_id
+    if not senior_referred_by_alert:
+        raise HTTPException(404, detail="No checkins found")
 
-    # Compare if the senior_id in the relationship is equal to senior_id in the checkin that triggered the alert
-    if checkin_senior_id != relationship_senior_id:
-        raise HTTPException(403, "Not authorized")
+    #Take all the seniors related to the current user
+    seniors_related_to_caregiver=db.exec(
+        select(Relationship.senior_id).where(Relationship.caregiver_id == user_id)
+        ).all()
 
-    alert.resolved = True
-    db.add(alert)
-    db.commit()
-    db.refresh(alert)
-    return ApiResponse(success=True, message="", data=alert)
+    if not seniors_related_to_caregiver:
+        raise HTTPException(403, detail="Not authorized")
+
+    #Check if the senior id connected to the alert has a relationship with the caregiver
+    if senior_referred_by_alert in seniors_related_to_caregiver:
+        alert.resolved = True
+        db.add(alert)
+        db.commit()
+        db.refresh(alert)
+        return ApiResponse(success=True, message="", data=alert)
+    
+    raise HTTPException(403, "Not authorized")
