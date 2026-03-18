@@ -1,30 +1,24 @@
 import useTitle from '../components/hooks/useTitle';
-/* import Card from '../components/ui/Card'; */
-/* import CheckIn from '../components/checkin/CheckIn'; */
-import Dashboard from './Dashboard.jsx';
+import HomeSenior from './HomeVariations/HomeSenior/HomeSenior.jsx'
+import HomeGuest from './HomeVariations/HomeVisitor/HomeGuest.jsx'
 import './Home.css';
 import { useAuthContext } from '../context/AuthContext.jsx';
-import ProtectedRoute from '../components/auth/ProtectedRoute.jsx';
-
 
 export default function Home() {
   useTitle();
-  const { user, isAuthenticated } = useAuthContext();
+  const {isAuthenticated } = useAuthContext();
   
-
+  console.log('Home renders, isAuthenticated:', isAuthenticated)  // ← add
   return (
     <>
-      {isAuthenticated ? (     //here we should check if the user is a senior or a family member, the home differs
+      {/* <h1>Home</h1> */}
+        {isAuthenticated ? (
         <>
-          {/* <CheckIn /> */}
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
+          <HomeSenior />
         </>
       ) : (
-        <a href="/login">Login</a>
-      )}
+            <HomeGuest/>
+        )}
     </>
   );
 }
-
