@@ -52,7 +52,7 @@ export default function SeniorList() {
         <p>No connections yet. Add one below!</p>
       ) : (
         seniors.map((senior) => (
-          <SeniorCard key={senior.id} senior={senior} />
+          <SeniorCard key={senior.relationship_id} senior={senior} />
         ))
       )}
 
