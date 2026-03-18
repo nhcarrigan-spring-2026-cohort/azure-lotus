@@ -40,7 +40,7 @@ export default function DashboardCards({ date }) {
           return {
             ...senior,
             status: checkin?.status ?? 'no checkin',
-            senior_time: checkin?.checkin_time ?? null,
+            senior_time: checkin?.checkin_time ?? checkin?.completed_at ?? null,
           };
         })
       );
