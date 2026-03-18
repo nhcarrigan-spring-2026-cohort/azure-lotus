@@ -9,7 +9,7 @@ import InviteVolunteers from './pages/InviteVolunteers.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Settings from './pages/Settings.jsx';
 import Footer from './components/ui/Footer.jsx';
-
+import HomeSenior from './pages/HomeVariations/HomeSenior/HomeSenior.jsx'
 import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
 import GuestRoute from './components/auth/GuestRoute.jsx';
 
@@ -42,6 +42,7 @@ export default function App() {
               </GuestRoute>
             }
           />
+          
           <Route
             path="/dashboard"
             element={
@@ -58,6 +59,11 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/checkin" element={
+            <ProtectedRoute>
+            <HomeSenior />
+             </ProtectedRoute>
+            } />
           <Route path="/invitevolunteers" element={<InviteVolunteers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
