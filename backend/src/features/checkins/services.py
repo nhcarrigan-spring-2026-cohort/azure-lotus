@@ -122,22 +122,32 @@ async def trigger_alert(checkin_id: UUID, current_user_email: str, session: Sess
 
 async def get_daily_checkin(senior_id: UUID, session) -> CheckIn:
     """Get the daily check-in for a senior."""
-    senior = None
+    senior = session.get(User, senior_id)
     if not senior:
         raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
-            f"Couldn't find senior {senior_id}",
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Couldn't find senior {senior_id}",
         )
+    # 2. get today's checkin for this senior
+    today = datetime.now(timezone.utc).date()
+    checkins = session.exec(
+        select(CheckIn).where(CheckIn.senior_id == senior_id)
+    ).all()
+    
+    for c in checkins:
+        if c.created_at.date() == today:
+            return c
+        
     return None
 
 
 async def get_missing_checkin_history(senior_id: UUID, session) -> list:
     """Get the missing check-in history for a senior."""
-    senior = None
+    senior = session.get(User, senior_id)
     if not senior:
         raise HTTPException(
-            status.HTTP_404_NOT_FOUND,
-            f"Couldn't find senior {senior_id}",
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Couldn't find senior {senior_id}",
         )
     return []
 
@@ -236,6 +246,7 @@ async def complete_checkin(
 
     checkin.status = "completed"
     checkin.completed_at = datetime.now(timezone.utc)
+    checkin.checkin_time = datetime.now(timezone.utc).strftime("%H:%M:%S")
     session.add(checkin)
     session.commit()
     session.refresh(checkin)
