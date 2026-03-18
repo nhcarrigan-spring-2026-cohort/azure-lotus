@@ -3,7 +3,7 @@ import useTitle from '../components/hooks/useTitle';
 import SeniorList from '../components/settings/SeniorList';
 import Button from '../components/ui/Button';
 
-export default function signup() {
+export default function Settings() {
   useTitle('Settings');
   const navigate = useNavigate();
 
@@ -16,6 +16,11 @@ export default function signup() {
         onClick={() => navigate('/add-connection')}
       >
         Add Connection
+      </Button>
+    <Button
+        onClick={() => navigate('/checkin')}        // ← added: go to HomeSenior (checkin)
+      >
+        Continue to Check-in
       </Button>
     </>
   );
