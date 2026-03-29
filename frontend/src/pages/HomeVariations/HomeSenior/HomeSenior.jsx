@@ -8,7 +8,6 @@ import CheckIn from '../../../components/checkin/CheckIn.jsx'
 import {useAuthContext} from "../../../context/AuthContext.jsx";
 import Button from '../../../components/ui/Button';
 
-
 export default function HomeSenior() {
   const { user } = useAuthContext();
   const queryClient = useQueryClient();
@@ -37,36 +36,41 @@ export default function HomeSenior() {
 
   const status = todayCheckin.data?.data?.status
   const checkinId = todayCheckin.data?.data?.id
-
+  
   return (
-    <>
-      <div>Welcome {user?.email}</div>
-      
-      {status === 'pending'
-        ? <CheckIn checkinId={checkinId} />         // shows "I'm OK" + "Alert Family"
-        : status === 'completed'
-          ? (
-          <div>
-          <div>You have already checked in today</div>
+  <div className="homesenior-container">
+    <p className="homesenior-welcome">Welcome, {user?.email}</p>
+
+    <div className="homesenior-card">
+      {status === 'pending' ? (
+        <>
+          <div className="homesenior-icon">👋</div>
+          <h2 className="homesenior-title">How are you today?</h2>
+          <CheckIn checkinId={checkinId} />
+        </>
+      ) : status === 'completed' ? (
+        <div className="homesenior-completed">
+          <div className="homesenior-icon">✅</div>
+          <h2 className="homesenior-title">All Good!</h2>
+          <p>You have already checked in today</p>
           <Button onClick={() => navigate('/dashboard')}>
-              Go to Dashboard
-            </Button>
-          </div>
-          )
-          
-          : (
-            // no checkin exists → let user create one
-            <div>
-              <p>No check-in scheduled for today.</p>
-              <Button
-                onClick={() => createCheckin.mutate()}
-                disabled={createCheckin.isPending}
-              >
-                {createCheckin.isPending ? 'Creating...' : 'Start Check-in'}
-              </Button>
-            </div>
-          )
-      }
-    </>
-  )
+            Go to Dashboard
+          </Button>
+        </div>
+      ) : (
+        <div className="homesenior-no-checkin">
+          <div className="homesenior-icon">📋</div>
+          <h2 className="homesenior-title">No check-in yet</h2>
+          <p>No check-in scheduled for today.</p>
+          <Button
+            onClick={() => createCheckin.mutate()}
+            disabled={createCheckin.isPending}
+          >
+            {createCheckin.isPending ? 'Creating...' : "Start Today's Check-in"}
+          </Button>
+        </div>
+      )}
+    </div>
+  </div>
+);
 }

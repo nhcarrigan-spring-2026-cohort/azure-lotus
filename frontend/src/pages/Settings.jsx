@@ -23,5 +23,6 @@ export default function Settings() {
         Continue to Check-in
       </Button>
     </>
+    
   );
 }

@@ -12,16 +12,26 @@ import Footer from './components/ui/Footer.jsx';
 import HomeSenior from './pages/HomeVariations/HomeSenior/HomeSenior.jsx'
 import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
 import GuestRoute from './components/auth/GuestRoute.jsx';
-
+import { useLocation } from 'react-router';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/query-client.js';
 import { AuthProvider } from './context/AuthContext.jsx';
 
 export default function App() {
+    const location = useLocation();
+    // map path to navbar type
+  const getNavType = () => {
+    const path = location.pathname;
+    if (path === '/dashboard') return 'dashboard';
+    if (path === '/checkin')   return 'checkin';
+    if (path === '/settings')  return 'settings';
+    return 'default';  // home, about,signup,login.
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Navbar />
+        <Navbar type={getNavType()} /> {/*Navbar rendered at top level with dynamic type */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />

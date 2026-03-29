@@ -1,0 +1,129 @@
+.homesenior-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #f9f9f9;
+}
+
+/* welcome message */
+.homesenior-welcome {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* card wrapping the content */
+.homesenior-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem 3rem;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+/* status icon */
+.homesenior-icon {
+  font-size: 3.5rem;
+}
+
+/* title inside card */
+.homesenior-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+}
+
+/* subtitle / description */
+.homesenior-subtitle {
+  font-size: 1rem;
+  color: #777;
+  margin: 0;
+}
+
+/* completed state */
+.homesenior-completed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  width: 100%;
+}
+
+.homesenior-completed p {
+  font-size: 1.1rem;
+  color: #4caf50;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* no checkin state */
+.homesenior-no-checkin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  width: 100%;
+}
+
+.homesenior-no-checkin p {
+  font-size: 1rem;
+  color: #888;
+  margin: 0;
+}
+
+/* buttons */
+.homesenior-btn {
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.homesenior-btn:active {
+  transform: scale(0.98);
+}
+
+.homesenior-btn-primary {
+  background-color: #7c3aed;
+  color: white;
+}
+
+.homesenior-btn-primary:hover {
+  background-color: #6d28d9;
+}
+
+.homesenior-btn-primary:disabled {
+  background-color: #c4b5fd;
+  cursor: not-allowed;
+}
+
+.homesenior-btn-secondary {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.homesenior-btn-secondary:hover {
+  background-color: #e5e7eb;
+}
+
+/* responsive */
+@media (max-width: 480px) {
+  .homesenior-card {
+    padding: 2rem 1.5rem;
+  }
+}

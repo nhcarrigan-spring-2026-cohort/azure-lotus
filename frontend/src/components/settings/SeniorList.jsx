@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import SeniorCard from './SeniorCard';
-import { getSeniorsByUser, addRelationship } from '../../api/senior.js';
+import { getSeniorsByUser, addRelationship, getCaregiverSeniorsList } from '../../api/senior.js';
 import { useAuthContext } from '../../context/AuthContext.jsx';
 
 export default function SeniorList() {
@@ -11,14 +11,34 @@ export default function SeniorList() {
   // form state
   const [seniorEmail, setSeniorEmail] = useState('');
   const [showForm, setShowForm] = useState(false);
-
-  // fetch existing relationships
+  
+  // Query to fetch seniors for the logged-in users
   const { data, status } = useQuery({
-    queryKey: ['seniors'],
-    queryFn: () => getSeniorsByUser(user?.id, 0),
-    enabled: !!user?.id && !!accessToken,
-  });
+  queryKey: ['seniors', user?.id],
+  queryFn: async () => {
+    const results = await Promise.allSettled([
+      getSeniorsByUser(user?.id, 0),       // caregiver → gets seniors
+      getCaregiverSeniorsList(),            // senior → gets caregivers
+    ]);
 
+    const caregiverData = results[0].status === 'fulfilled'
+      ? (results[0].value?.data ?? []) : [];
+    const monitorData = results[1].status === 'fulfilled'
+      ? (results[1].value?.data ?? []) : [];
+    // deduplicate by a unique user identifier across both arrays
+    const seen = new Set();
+    const merged = [...caregiverData, ...monitorData].filter(item => {
+    // use whichever user ID field represents the OTHER person
+    const uniqueId = item.senior_id || item.caregiver_id;
+    if (seen.has(uniqueId)) return false;
+    seen.add(uniqueId);
+    return true;
+    });
+    return { data: merged };
+    },
+    enabled: !!user?.id && !!accessToken,
+    });
+  
   // add new relationship
   const addRelationshipMutation = useMutation({
     mutationFn: (email) => addRelationship({ email: email }),
@@ -39,7 +59,7 @@ export default function SeniorList() {
   }
 
   if (status === 'pending') return <div>Loading...</div>
-  if (status === 'error') return <div>Failed to load seniors.</div>
+  if (status === 'error') return <div>Failed to load connections.</div>
 
   const seniors =data?.data ?? []
 
@@ -52,7 +72,8 @@ export default function SeniorList() {
         <p>No connections yet. Add one below!</p>
       ) : (
         seniors.map((senior) => (
-          <SeniorCard key={senior.relationship_id} senior={senior} />
+          <SeniorCard key={senior.relationship_id || senior.caregiver_id}  
+          senior={senior} />
         ))
       )}
 

@@ -6,13 +6,9 @@ import api from '../lib/axios.js';
 */
 
 
-const getCaregiverSeniorsList = async ({ caregiverId, whichDay = 0}) => {
+export const getCaregiverSeniorsList = async () => {
   try {
-    const { data } = await api.get(`/relationships/monitoring`, {
-      params: {
-        n: whichDay
-      }
-    });
+    const { data } = await api.get(`/relationships/monitors`);
     return data;
   } catch (error) {
     throw error.response;

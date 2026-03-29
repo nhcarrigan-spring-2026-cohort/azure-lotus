@@ -7,8 +7,7 @@ import { useAuthContext } from '../context/AuthContext.jsx';
 export default function Home() {
   useTitle();
   const {isAuthenticated } = useAuthContext();
-  
-  console.log('Home renders, isAuthenticated:', isAuthenticated)  // ← add
+    console.log('Home renders, isAuthenticated:', isAuthenticated)  // ← add
   return (
     <>
       {/* <h1>Home</h1> */}
