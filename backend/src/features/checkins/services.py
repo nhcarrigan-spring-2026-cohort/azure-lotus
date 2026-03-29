@@ -244,7 +244,7 @@ async def complete_checkin(
             detail="You do not own this check-in",
         )
 
-    checkin.status = "completed"
+    checkin.status = CheckInStatus.COMPLETED
     checkin.completed_at = datetime.now(timezone.utc)
     checkin.checkin_time = datetime.now(timezone.utc).strftime("%H:%M:%S")
     session.add(checkin)
