@@ -36,3 +36,12 @@ export const addRelationship = async (data) => {
     throw error.response;
   }
 };
+// remove a relationship (disconnect from a senior)
+export const removeRelationship = async (relationshipId) => {
+  try {
+    const res = await api.delete(`/relationships/${relationshipId}`);
+    return res.data;
+  } catch (error) {
+    throw error.response;
+  }
+};

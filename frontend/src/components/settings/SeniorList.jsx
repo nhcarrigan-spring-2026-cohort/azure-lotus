@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import SeniorCard from './SeniorCard';
 import { getSeniorsByUser, addRelationship, getCaregiverSeniorsList } from '../../api/senior.js';
 import { useAuthContext } from '../../context/AuthContext.jsx';
+import Button from '../ui/Button';
 
 export default function SeniorList() {
   const { user, accessToken } = useAuthContext();
@@ -97,9 +98,9 @@ export default function SeniorList() {
           </button>
         </div>
       ) : (
-        <button onClick={() => setShowForm(true)}>
+        <Button onClick={() => setShowForm(true)}>
           + Add Connection
-        </button>
+        </Button>
       )}
     </div>
   );

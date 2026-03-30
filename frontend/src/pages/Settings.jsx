@@ -11,17 +11,14 @@ export default function Settings() {
     <>
       <h2>Settings</h2>
       <SeniorList />
-      <Button
-        // TODO:  confirm page name and add a new page
-        onClick={() => navigate('/add-connection')}
-      >
-        Add Connection
-      </Button>
+    <div style={{ display: 'flex', gap: '35px', marginTop: '35px' }}>
     <Button
         onClick={() => navigate('/checkin')}        // ← added: go to HomeSenior (checkin)
       >
         Continue to Check-in
       </Button>
+
+      </div>
     </>
     
   );
