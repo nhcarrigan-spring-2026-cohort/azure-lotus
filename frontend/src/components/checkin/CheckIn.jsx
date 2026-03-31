@@ -11,6 +11,7 @@ import {
   getTodayCheckIn
 } from '../../api/checkin.js';
 
+
 export default function CheckIn({
   checkinId
 }) {
@@ -38,6 +39,7 @@ export default function CheckIn({
   });
 
   return (
+    <>
     <div className={styles.container}>
       <div>{`checkinId: ${checkinId}`}</div>
       <div className={styles.buttons}>
@@ -58,5 +60,6 @@ export default function CheckIn({
         />
       </div>
     </div>
+    </>
   );
 }

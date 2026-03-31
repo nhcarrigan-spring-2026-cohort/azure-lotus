@@ -21,10 +21,27 @@ export default function Card({
     //const cardClass = `card ${className}`; //  @j3farsale7: this was build in the past, I don't know why to use {children, className, onClick} for now 
     function statusIcon() {
         if (status === "missed") return '❌';
-        if (status === "completed" || status === "checked in") return '✔️';
+        if (status === "completed" || status === "checked in") return '✔';
         if (status === "waiting") return '⌛';
         return '❓';
     }
+    // format time — handles both "HH:MM:SS" string and full ISO datetime
+  function formatTime(time) {
+    if (!time) return 'No Data';
+    try {
+      // if it's already a time string like "16:13:22.296308", just take HH:MM
+      if (typeof time === 'string' && !time.includes('T')) {
+        return time.slice(0, 5);  // "16:13"
+      }
+      // if it's a full ISO datetime string
+      return new Date(time).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch {
+      return 'No Data';
+    }
+  }
 
     return (
 
@@ -33,7 +50,7 @@ export default function Card({
                     <div className='icon-status-time'> 
                         <div className='icon' title={status}>{statusIcon()}</div>
                         <div className='status'>{status || 'noData'}</div>
-                        <div className='time'>{senior_time || 'noData'}</div>
+                        <div className='time'>{formatTime(senior_time)}</div>
                     </div>
                     <div className='call-button' title={`Call ${senior_phone || 'N/A'}`}>📞</div>
                     <div className='message-button' title={`Message ${senior_phone || 'N/A'}`}>💬</div>
