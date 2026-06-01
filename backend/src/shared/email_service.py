@@ -39,6 +39,6 @@ def send_email_to_missing_checkin(to_email: str):
         From=Settings.NO_REPLY_EMAIL,
         To=to_email,
         Subject="Check-in Missing",
-        Body="You did not complete today's check-in.",
+        Body="WARNING: The senior did not complete today's check-in.",
     )
     send_email(email)
