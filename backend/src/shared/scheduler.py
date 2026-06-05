@@ -46,6 +46,7 @@ def start_scheduler():
         trigger="cron",
         hour=0,
         minute=0,
+        # second="*/30",  # For testing, run every 30 seconds
         id="create_daily_checkins",
     )
 
@@ -53,9 +54,9 @@ def start_scheduler():
     scheduler.add_job(
         scheduled_send_missing_checkin_reminders,
         trigger="cron",
-        #hour=22,
-        #minute=0,
-        second="*/30",  # For testing, run every 30 seconds
+        hour=22,
+        minute=0,
+        # second="*/30",  # For testing, run every 30 seconds
         id="send_missing_checkin_reminders",
     )
 
