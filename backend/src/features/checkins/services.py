@@ -23,6 +23,26 @@ def _get_user_by_email(email: str, session: Session) -> User:
         )
     return user
 
+def create_alert(checkin_id: UUID, session: Session):
+    """
+    Set a particular check-in to alerted and create an alert record.
+
+    - 404 if check-in not found
+    - 400 if already ALERTED
+    """
+
+    checkin = session.get(CheckIn, checkin_id)
+    if not checkin:
+        raise HTTPException(status_code=404, detail="Check-in not found")
+    if checkin.status == CheckInStatus.ALERTED:
+        raise HTTPException(status_code=400, detail="Check-in is already ALERTED")
+
+    checkin.status = CheckInStatus.ALERTED
+    session.add(checkin)
+    session.flush()
+
+    session.add(Alert(checkin_id=checkin.id, alert_type="missed_checkin", resolved=False))
+    session.commit()
 
 async def create_todays_checkin(current_user_email: str, session: Session) -> CheckIn:
     """Create today's check-in for the authenticated senior.
@@ -201,6 +221,7 @@ def mark_missing_and_notify(session: Session):
             send_email_to_missing_checkin(caregiver.email)
 
         checkin.status = CheckInStatus.MISSED
+        create_alert(checkin.id, session)
 
     try:
         session.commit()

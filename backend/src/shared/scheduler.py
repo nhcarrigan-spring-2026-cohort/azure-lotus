@@ -46,6 +46,7 @@ def start_scheduler():
         trigger="cron",
         hour=0,
         minute=0,
+        # second="*/30",  # For testing, run every 30 seconds
         id="create_daily_checkins",
     )
 
