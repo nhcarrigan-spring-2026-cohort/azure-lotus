@@ -17,13 +17,14 @@ export function AuthProvider({ children }) {
   const [accessToken, setAccessToken] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false)
 
-  const loginSuccess = (payload) => {
+  const loginSuccess = (payload,navigate) => {
     const token = payload.user_info.access_token;
     setIsAuthenticated(true);
     setAccessToken(token);
     setAxiosAccessToken(token);
     setUser(payload.user_info);
     setIsAuthReady(true)
+    navigate('/settings', { replace: true });
   };
 
   const logout = () => {

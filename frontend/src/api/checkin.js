@@ -1,4 +1,12 @@
 import api from '../lib/axios.js';
+export const createCheckIn = async () => {
+  try {
+    const res = await api.post('/check_in')
+    return res.data
+  } catch (error) {
+    throw error.response
+  }
+}
 
 // checkin, set status to completed
 // Assuming a checkin would already be created with a "pending" status
@@ -21,7 +29,7 @@ export const alertCheckInMutation = async (checkinId) => {
     throw e.response;
   }
 };
-
+// get today's checkin
 export const getTodayCheckIn = async () => {
   try {
     const response = await api.get('/check_in/today');
@@ -29,4 +37,6 @@ export const getTodayCheckIn = async () => {
   } catch (e) {
     throw e.response;
   }
-}
+};
+
+

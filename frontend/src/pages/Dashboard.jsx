@@ -3,7 +3,7 @@ import './Dashboard.css';
 import HistorySlider from '../components/ui/HistorySlider';
 import DashboardCards from '../components/DashboardCards';
 import {useState} from 'react';
-
+import Navbar from "../components/Navbar";
 /* 
     dashboard is a flex-column-down that has TWO major compnents:
     1- on top a HistorySlider that points to TODAY by defualt, user can choose today or yesterday or previos days up to 7 :
@@ -32,9 +32,11 @@ export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(0);
 
   return (
+    <>
     <div className='dashboard-content'>  {/*main felx-down*/}
       <HistorySlider onDateSelect={setSelectedDate} />
       <DashboardCards date={selectedDate} />
     </div>
+    </>
   );
 }

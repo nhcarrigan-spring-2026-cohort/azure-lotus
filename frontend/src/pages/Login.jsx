@@ -25,12 +25,11 @@ export default function Login() {
     mutationFn: loginRequest,
     onSuccess: (user) => {
       console.log(`Login successful, ${JSON.stringify(user)}`);
-      loginSuccess(user);
-      navigate(fromLocation, { replace: true });
+      loginSuccess(user, navigate);
     },
     onError: (error) => {
-      console.error(`Login failed: ${error.data.detail}`);
-      alert(`Login failed: ${error.data.detail}`);
+      console.error(`Login failed: ${error?.data?.detail || error?.message || 'Unknown error'}`);
+      alert(`Login failed: ${error?.data?.detail || 'Login failed. Please try again.'}`);
     },
   });
 
